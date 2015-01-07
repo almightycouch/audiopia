@@ -11,3 +11,6 @@ ground:db
 iron:router
 less
 reactive-var
+accounts-base
+accounts-password
+artwells:accounts-guest
