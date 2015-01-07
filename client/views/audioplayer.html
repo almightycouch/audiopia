@@ -1,0 +1,20 @@
+<template name="audioplayer">
+    <div class="audioplayer">
+        <div class="audioplayer-playpause-button" data-role="play-button"><a href="#"></a></div>
+        <div class="audioplayer-time audioplayer-time-current">{{formatSecs currentTime}}</div>
+        <div class="audioplayer-progressbar" data-role="progress-slider">
+            <div class="audioplayer-progressbar-loaded"></div>
+            <div class="audioplayer-progressbar-played"></div>
+        </div>
+        <div class="audioplayer-time audioplayer-time-duration">{{formatSecs duration}}</div>
+        <div class="audioplayer-volume">
+            <div class="audioplayer-volume-button" data-role="volume-button"><a href="#"></a></div>
+            <div class="audioplayer-volume-slider">
+                <div data-role="volume-slider">
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <audio></audio>
+    </div>
+</template>
