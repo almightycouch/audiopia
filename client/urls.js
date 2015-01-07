@@ -3,13 +3,19 @@ Router.configure({
 });
 
 Router.route('/', function() {
-    this.render('dashboard');
+    var self = this;
+    self.render('dashboard');
 }, {
     name: 'dashboard'
 });
 
-Router.route('/music', function() {
-    this.render('music');
+Router.route('/music/', function() {
+    var self = this;
+    self.render('music', {
+        data: {
+            model: MusicManager.requestModel(self.params)
+        }
+    });
 }, {
     name: 'music'
 });

@@ -1,6 +1,6 @@
 MusicManager = {
-    storage: new PersistentStorage(),
-    collection: new Ground.Collection('music', { connection: null }),
+    localStorage: new PersistentStorage(),
+    localCollection: new Ground.Collection('music', { connection: null }),
 
     addSongs: function(files, errorCallback) {
         var self = this;
@@ -16,11 +16,11 @@ MusicManager = {
                     'genre': result.genre[0],
                     'year': result.year,
                 };
-                self.storage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(
+                self.localStorage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(
                     _.extend(song, {
                         extension: path.substr(path.lastIndexOf('.') + 1)
                     })), file, function(entry) {
-                    self.collection.insert(_.extend(song, {
+                    self.localCollection.insert(_.extend(song, {
                         url: entry.toURL()
                     }));
                     asyncCallback();
@@ -35,5 +35,12 @@ MusicManager = {
                 errorCallback(error);
             }
         });
+    },
+    requestModel: function(params) {
+        if(params.hash == 'me') {
+            return this.localCollection.find();
+        } else {
+            return Music.find();
+        }
     }
 };

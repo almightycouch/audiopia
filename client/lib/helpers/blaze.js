@@ -1,6 +1,21 @@
-UI.registerHelper('activeRoute', function(route) {
-    if(Router.current().route.getName() == route) {
-        return 'uk-active';
+UI.registerHelper('activeRoute', function(route, options) {
+    var router = Router.current();
+    var params = options.hash;
+    if(router.route && router.route.getName() == route) {
+        if(!_.isEmpty(params.query)) {
+            var items = params.query.split('&');
+            for(var i in items) {
+                var item = items[i].split('=');
+                if(item.length != 2 || router.params.query[item[0]] != item[1]) {
+                    return;
+                }
+            }
+        } else if(!_.isEmpty(router.params.query)) {
+            return;
+        }
+        if(params.hash == router.params.hash) {
+            return 'uk-active';
+        }
     }
 });
 

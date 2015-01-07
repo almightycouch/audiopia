@@ -21,7 +21,7 @@
                     <a href="#"><i class="uk-icon-music"></i> Music</a>
                     <ul class="uk-nav-sub">
                         <li class="{{activeRoute 'music'}}"><a href="{{pathFor 'music'}}"><i class="uk-icon-cloud"></i> Online</a></li>
-                        <li class=""><a href="#"><i class="uk-icon-download"></i> Local Storage</a></li>
+                        <li class="{{activeRoute 'music' hash='me'}}"><a href="{{pathFor 'music' hash='me'}}"><i class="uk-icon-download"></i> Local Storage</a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
