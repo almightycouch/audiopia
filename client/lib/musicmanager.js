@@ -6,7 +6,7 @@ MusicManager = {
         var self = this;
         async.eachSeries(files, function(file, asyncCallback) {
             var path = file.webkitRelativePath;
-            var meta = musicmetadata(file);
+            var meta = musicmetadata(file, { duration: true });
             meta.on('metadata', function(result) {
                 var song = {
                     'track': result.track.no,
@@ -15,6 +15,7 @@ MusicManager = {
                     'artist': result.artist[0],
                     'genre': result.genre[0],
                     'year': result.year,
+                    'duration': result.duration
                 };
                 self.localStorage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(
                     _.extend(song, {
@@ -35,12 +36,5 @@ MusicManager = {
                 errorCallback(error);
             }
         });
-    },
-    requestModel: function(params) {
-        if(params.hash == 'me') {
-            return this.localCollection.find();
-        } else {
-            return Music.find();
-        }
     }
 };

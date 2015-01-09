@@ -1,11 +1,11 @@
-Template.audioplayer.created = function() {
+Template.AudioPlayer.created = function() {
     this.audioElement = null;
-    this._classPrefix = 'audioplayer-';
+    this._classPrefix = 'AudioPlayer-';
     this.duration = new ReactiveVar(-1);
     this.currentTime = new ReactiveVar(0);
 }
 
-Template.audioplayer.rendered = function() {
+Template.AudioPlayer.rendered = function() {
     var self = this;
     self.audioElement = self.find('audio');
     self.audioElement.addEventListener('play', function(event) {
@@ -27,7 +27,7 @@ Template.audioplayer.rendered = function() {
     });
 }
 
-Template.audioplayer.helpers({
+Template.AudioPlayer.helpers({
     duration: function() {
         var self = Template.instance();
         return self.duration.get();
@@ -38,7 +38,7 @@ Template.audioplayer.helpers({
     }
 });
 
-Template.audioplayer.events({
+Template.AudioPlayer.events({
     'click [data-role="play-button"]': function(event, template) {
         var self = template;
         if(!self.audioElement.paused) {
