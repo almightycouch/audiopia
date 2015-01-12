@@ -56,4 +56,4 @@ MusicManager = {
             self.pushSong(song, null, errorCallback);
         });
     }
-};
+}

@@ -1,5 +1,5 @@
 Template.AudioPlayer.created = function() {
-    this.audioElement = null;
+    this.audioElement = AudioPlayer.audioElement;
     this._classPrefix = 'AudioPlayer-';
     this.duration = new ReactiveVar(-1);
     this.currentTime = new ReactiveVar(0);
@@ -7,7 +7,6 @@ Template.AudioPlayer.created = function() {
 
 Template.AudioPlayer.rendered = function() {
     var self = this;
-    self.audioElement = self.find('audio');
     self.audioElement.addEventListener('play', function(event) {
         $(self.firstNode).addClass(self._classPrefix + 'playing');
     });
