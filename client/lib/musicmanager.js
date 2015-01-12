@@ -21,6 +21,7 @@ MusicManager = {
                     _.extend(song, {
                         extension: path.substr(path.lastIndexOf('.') + 1)
                     })), file, function(entry) {
+                    self.pushSong(song);
                     self.localCollection.insert(_.extend(song, {
                         url: entry.toURL()
                     }));
@@ -35,6 +36,24 @@ MusicManager = {
             if(error) {
                 errorCallback(error);
             }
+        });
+    },
+    pushSong: function(song, successCallback, errorCallback) {
+        var self = this;
+        Meteor.call('pushSong', song, function(error, songId) {
+            if(!error) {
+                if(successCallback) {
+                    successCallback(_.extend(song, { '_id': songId }));
+                }
+            } else if(errorCallback) {
+                errorCallback(error);
+            }
+        });
+    },
+    synchronize: function(errorCallback) {
+        var self = this;
+        _.each(self.localCollection.find().fetch(), function(song) {
+            self.pushSong(song, null, errorCallback);
         });
     }
 };
