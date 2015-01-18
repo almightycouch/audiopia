@@ -12,15 +12,24 @@ AudioPlayer = {
         });
         return self.audioElement;
     },
-    load: function(song) {
+    load: function(song, successCallback, errorCallback) {
         var self = this;
-        Session.set('currentSong', song);
         if(song.url) {
             self.loadFromUrl(song.url);
         } else if(song.owner == Meteor.userId()) {
             self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url);
         } else {
-            P2P.requestStream(song.owner, song._id);
+            P2P.requestStream(song.owner, song._id, function() {
+                Session.set('currentSong', song);
+                if(successCallback) {
+                    successCallback();
+                }
+            }, errorCallback);
+            return;
+        }
+        Session.set('currentSong', song);
+        if(successCallback) {
+            successCallback();
         }
     },
     loadFromUrl: function(url) {
