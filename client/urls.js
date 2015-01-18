@@ -11,7 +11,7 @@ Router.route('/', function() {
 
 Router.route('/music/', function() {
     var self = this;
-    self.render('MusicTable', {
+    self.render('TableView', {
         data: {
             model: function() {
                 var query = {};
