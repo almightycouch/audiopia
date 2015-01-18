@@ -1,4 +1,5 @@
 AudioPlayer = {
+    _currentSong: null,
     audioElement: null,
 
     initialize: function() {
@@ -8,14 +9,20 @@ AudioPlayer = {
             this.play();
         });
         self.audioElement.addEventListener('ended', function() {
+            self._currentSong = null;
         });
         return self.audioElement;
     },
     load: function(song) {
         var self = this;
-        var url = song.url;
-        if(!url) { }
-        self.loadFromUrl(url);
+        self._currentSong = song;
+        if(song.url) {
+            self.loadFromUrl(song.url);
+        } else if(song.owner == Meteor.userId()) {
+            self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url);
+        } else {
+            P2P.requestStream(song.owner, song._id);
+        }
     },
     loadFromUrl: function(url) {
         var self = this;

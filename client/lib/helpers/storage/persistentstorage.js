@@ -17,6 +17,10 @@ PersistentStorage.prototype.readFile = function(filePath, successCallback, error
     }, errorCallback);
 }
 
+PersistentStorage.prototype.readFileFromUrl = function(url, successCallback, errorCallback) {
+    window.webkitResolveLocalFileSystemURL(url, successCallback, errorCallback);
+}
+
 PersistentStorage.prototype.createPath = function(path, successCallback, errorCallback) {
     var self = this;
     var createDir = function(root, folders) {

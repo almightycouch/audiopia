@@ -20,7 +20,11 @@ Template.AudioPlayer.rendered = function() {
             self.$('[data-role="volume-slider"] :first-child').height(Math.ceil(this.volume * 100) + '%');
         });
         self.audioElement.addEventListener('durationchange', function(event) {
-            self.duration.set(this.duration);
+            if(this.duration == Infinity) {
+                self.duration.set(AudioPlayer._currentSong.duration + 1);
+            } else {
+                self.duration.set(this.duration);
+            }
         });
         self.audioElement.addEventListener('timeupdate', function(event) {
             self.currentTime.set(this.currentTime);
