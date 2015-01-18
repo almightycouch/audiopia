@@ -1,10 +1,10 @@
-/*! UIkit 2.14.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.16.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(core) {
 
     if (typeof define == "function" && define.amd) { // AMD
         define("uikit", function(){
 
-            var uikit = core(window, window.jQuery, window.document);
+            var uikit = window.UIkit || core(window, window.jQuery, window.document);
 
             uikit.load = function(res, req, onload, config) {
 
@@ -43,7 +43,7 @@
 
     var UI = {}, _UI = window.UIkit;
 
-    UI.version = '2.14.0';
+    UI.version = '2.16.2';
     UI._prefix = 'uk';
 
     UI.noConflict = function(prefix) {
@@ -258,7 +258,7 @@
             elements = $(context);
         }
 
-        elements.trigger('display.uk.check');
+        elements.trigger(UI.prefix('display.@.check'));
 
         // fix firefox / IE animations
         if (initanimation) {
@@ -586,7 +586,7 @@
 
                 var observer = new UI.support.mutationobserver(UI.Utils.debounce(function(mutations) {
                     fn.apply(element, []);
-                    $element.trigger('changed.uk.dom');
+                    $element.trigger(UI.prefix('changed.@.dom'));
                 }, 50));
 
                 // pass in the target node, as well as the observer options
@@ -949,7 +949,7 @@
 
             this.on("display.uk.check", function(e) {
                 $this.columns = $this.element.children();
-                if(this.element.is(":visible")) this.process();
+                if (this.element.is(":visible")) this.process();
             }.bind(this));
 
             stacks.push(this);
@@ -959,30 +959,7 @@
 
             var $this = this;
 
-            this.revert();
-
-            var skip         = false,
-                firstvisible = this.columns.filter(":visible:first"),
-                offset       = firstvisible.length ? (firstvisible.position().top + firstvisible.outerHeight()) - 1 : false; // (-1): weird firefox bug when parent container is display:flex
-
-            if (offset === false) return;
-
-            this.columns.each(function() {
-
-                var column = UI.$(this);
-
-                if (column.is(":visible")) {
-
-                    if (skip) {
-                        column.addClass($this.options.cls);
-                    } else {
-
-                        if (column.position().top >= offset) {
-                            skip = column.addClass($this.options.cls);
-                        }
-                    }
-                }
-            });
+            UI.Utils.stackMargin(this.columns, this.options);
 
             return this;
         },
@@ -992,6 +969,83 @@
             return this;
         }
     });
+
+    // responsive iframes
+    UI.ready((function(){
+
+        var iframes = [], check = function() {
+
+            iframes.forEach(function(iframe){
+
+                if (!iframe.is(':visible')) return;
+
+                var width  = iframe.parent().width(),
+                    iwidth = iframe.data('width'),
+                    ratio  = (width / iwidth),
+                    height = Math.floor(ratio * iframe.data('height'));
+
+                iframe.css({'height': (width < iwidth) ? height : iframe.data('height')});
+            });
+        };
+
+        UI.$win.on('resize', UI.Utils.debounce(check, 15));
+
+        return function(context){
+
+            UI.$('iframe.@-responsive-width', context).each(function(){
+
+                var iframe = $(this);
+
+                if (!iframe.data('responsive') && iframe.attr('width') && iframe.attr('height')) {
+
+                    iframe.data('width'     , iframe.attr('width'));
+                    iframe.data('height'    , iframe.attr('height'));
+                    iframe.data('responsive', true);
+                    iframes.push(iframe);
+                }
+            });
+
+            check();
+        };
+
+    })());
+
+
+    // helper
+
+    UI.Utils.stackMargin = function(elements, options) {
+
+        options = $.extend({
+            'cls': '@-margin-small-top'
+        }, options);
+
+        options.cls = UI.prefix(options.cls);
+
+        elements = $(elements).removeClass(options.cls);
+
+        var skip         = false,
+            firstvisible = elements.filter(":visible:first"),
+            offset       = firstvisible.length ? (firstvisible.position().top + firstvisible.outerHeight()) - 1 : false; // (-1): weird firefox bug when parent container is display:flex
+
+        if (offset === false) return;
+
+        elements.each(function() {
+
+            var column = UI.$(this);
+
+            if (column.is(":visible")) {
+
+                if (skip) {
+                    column.addClass(options.cls);
+                } else {
+
+                    if (column.position().top >= offset) {
+                        skip = column.addClass(options.cls);
+                    }
+                }
+            }
+        });
+    };
 
 })(jQuery, UIkit);
 
@@ -1251,7 +1305,7 @@
 
     "use strict";
 
-    var togglers = [];
+    var toggles = [];
 
     UI.component('toggle', {
 
@@ -1277,8 +1331,8 @@
 
                 setTimeout(function(){
 
-                    togglers.forEach(function(toggler){
-                        toggler.getTogglers();
+                    toggles.forEach(function(toggle){
+                        toggle.getToggles();
                     });
 
                 }, 0);
@@ -1289,21 +1343,21 @@
 
             var $this = this;
 
-            this.getTogglers();
+            this.getToggles();
 
             this.on("click", function(e) {
                 if ($this.element.is('a[href="#"]')) e.preventDefault();
                 $this.toggle();
             });
 
-            togglers.push(this);
+            toggles.push(this);
         },
 
         toggle: function() {
 
             if(!this.totoggle.length) return;
 
-            if (this.options.animation) {
+            if (this.options.animation && UI.support.animation) {
 
                 var $this = this, animations = UI.prefix(this.options.animation).split(',');
 
@@ -1343,7 +1397,7 @@
             }
         },
 
-        getTogglers: function() {
+        getToggles: function() {
             this.totoggle = this.options.target ? UI.$(this.options.target):[];
         }
     });
@@ -1875,50 +1929,7 @@
 
         match: function() {
 
-            this.revert();
-
-            var firstvisible = this.columns.filter(":visible:first");
-
-            if (!firstvisible.length) return;
-
-            var stacked = Math.ceil(100 * parseFloat(firstvisible.css('width')) / parseFloat(firstvisible.parent().css('width'))) >= 100 ? true : false,
-                max     = 0,
-                $this   = this;
-
-            if (stacked) return;
-
-            if(this.options.row) {
-
-                this.element.width(); // force redraw
-
-                setTimeout(function(){
-
-                    var lastoffset = false, group = [];
-
-                    $this.elements.each(function(i) {
-                        var ele = $(this), offset = ele.offset().top;
-
-                        if(offset != lastoffset && group.length) {
-
-                            $this.matchHeights($(group));
-                            group  = [];
-                            offset = ele.offset().top;
-                        }
-
-                        group.push(ele);
-                        lastoffset = offset;
-                    });
-
-                    if(group.length) {
-                        $this.matchHeights($(group));
-                    }
-
-                }, 0);
-
-            } else {
-
-                this.matchHeights(this.elements);
-            }
+            UI.Utils.matchHeights(this.elements, this.options);
 
             return this;
         },
@@ -1926,23 +1937,6 @@
         revert: function() {
             this.elements.css('min-height', '');
             return this;
-        },
-
-        matchHeights: function(elements){
-
-            if(elements.length < 2) return;
-
-            var max = 0;
-
-            elements.each(function() {
-                max = Math.max(max, $(this).outerHeight());
-            }).each(function(i) {
-
-                var element = $(this),
-                    height  = max - (element.outerHeight() - element.height());
-
-                element.css('min-height', height + 'px');
-            });
         }
     });
 
@@ -1975,6 +1969,72 @@
         }
     });
 
+    // helper
+
+    UI.Utils.matchHeights = function(elements, options) {
+
+        elements = $(elements).css('min-height', '');
+        options  = $.extend({ row : true }, options);
+
+        var firstvisible = elements.filter(":visible:first");
+
+        if (!firstvisible.length) return;
+
+        var stacked      = Math.ceil(100 * parseFloat(firstvisible.css('width')) / parseFloat(firstvisible.parent().css('width'))) >= 100 ? true : false,
+            max          = 0,
+            matchHeights = function(group){
+
+                if(group.length < 2) return;
+
+                var max = 0;
+
+                group.each(function() {
+                    max = Math.max(max, $(this).outerHeight());
+                }).each(function(i) {
+
+                    var element = $(this),
+                    height  = max - (element.outerHeight() - element.height());
+
+                    element.css('min-height', height + 'px');
+                });
+            };
+
+        if (stacked) return;
+
+        if(options.row) {
+
+            firstvisible.width(); // force redraw
+
+            setTimeout(function(){
+
+                var lastoffset = false, group = [];
+
+                elements.each(function(i) {
+
+                    var ele = $(this), offset = ele.offset().top;
+
+                    if(offset != lastoffset && group.length) {
+
+                        matchHeights($(group));
+                        group  = [];
+                        offset = ele.offset().top;
+                    }
+
+                    group.push(ele);
+                    lastoffset = offset;
+                });
+
+                if(group.length) {
+                    matchHeights($(group));
+                }
+
+            }, 0);
+
+        } else {
+            matchHeights(elements);
+        }
+    };
+
 })(jQuery, UIkit);
 
 (function($, UI) {
@@ -1988,7 +2048,8 @@
         defaults: {
             keyboard: true,
             bgclose: true,
-            minScrollHeight: 150
+            minScrollHeight: 150,
+            center: false
         },
 
         scrollable: false,
@@ -2071,8 +2132,17 @@
 
             this.element.css('overflow-y', this.scrollbarwidth ? 'scroll' : 'auto');
 
-            this.updateScrollable();
+            if (!this.updateScrollable() && this.options.center) {
 
+                var dh  = this.dialog.outerHeight(),
+                pad = parseInt(this.dialog.css('margin-top'), 10) + parseInt(this.dialog.css('margin-bottom'), 10);
+
+                if ((dh + pad) < window.innerHeight) {
+                    this.dialog.css({'top': (window.innerHeight/2 - dh/2) - pad });
+                } else {
+                    this.dialog.css({'top': ''});
+                }
+            }
         },
 
         updateScrollable: function() {
@@ -2080,17 +2150,21 @@
             // has scrollable?
             var scrollable = this.dialog.find('.@-overflow-container:visible:first');
 
-            if (scrollable) {
+            if (scrollable.length) {
 
                 scrollable.css("height", 0);
 
                 var offset = Math.abs(parseInt(this.dialog.css("margin-top"), 10)),
-                    dh     = this.dialog.outerHeight(),
-                    wh     = window.innerHeight,
-                    h      = wh - 2*(offset < 20 ? 20:offset) - dh;
+                dh     = this.dialog.outerHeight(),
+                wh     = window.innerHeight,
+                h      = wh - 2*(offset < 20 ? 20:offset) - dh;
 
                 scrollable.css("height", h < this.options.minScrollHeight ? "":h);
+
+                return true;
             }
+
+            return false;
         },
 
         _hide: function() {
@@ -2292,7 +2366,7 @@
 
         open: function(li, noanimation) {
 
-            var element = this.element, $li = UI.$(li);
+            var $this = this, element = this.element, $li = UI.$(li);
 
             if (!this.options.multiple) {
 
@@ -2314,9 +2388,12 @@
 
                 if (noanimation) {
                     $li.data('list-container').stop().height($li.hasClass("@-open") ? "auto" : 0);
+                    this.trigger("display.uk.check");
                 } else {
                     $li.data('list-container').stop().animate({
                         height: ($li.hasClass("@-open") ? getHeight($li.data('list-container').find('ul:first')) : 0)
+                    }, function() {
+                        $this.trigger("display.uk.check");
                     });
                 }
             }
@@ -2595,6 +2672,10 @@
                     active = toggles.eq(UI.prefix(this.options.active));
                     this.show(active.length ? active : toggles.eq(0), false);
                 }
+
+                this.on(UI.prefix('changed.@.dom'), function() {
+                    $this.connect = UI.$($this.options.connect);
+                });
             }
 
         },
@@ -2609,10 +2690,10 @@
                 tab = UI.$(tab);
             } else {
 
-                var togglers = this.find(this.options.toggle);
+                var toggles = this.find(this.options.toggle);
 
-                tab = tab < 0 ? togglers.length-1 : tab;
-                tab = togglers.eq(togglers[tab] ? tab : 0);
+                tab = tab < 0 ? toggles.length-1 : tab;
+                tab = toggles.eq(toggles[tab] ? tab : 0);
             }
 
             var $this     = this,
@@ -2635,7 +2716,7 @@
                     return coreAnimation.apply($this, [anim, current, next]);
                 };
 
-            if (animate===false) {
+            if (animate===false || !UI.support.animation) {
                 animation = Animations.none;
             }
 
