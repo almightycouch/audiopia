@@ -8,7 +8,7 @@ WebRTC = function(userId, options) {
             MusicManager.localStorage.readFileFromUrl(song.url, function(fileEntry) {
                 var reader = new FileReader();
                 reader.onloadend = (function(e) {
-                    var context = new AudioContext();
+                    var context = self._audioContext;
                     context.decodeAudioData(e.target.result, function(buffer) {
                         var remote = context.createMediaStreamDestination();
                         var source = context.createBufferSource();
@@ -35,6 +35,7 @@ WebRTC = function(userId, options) {
     }).on('error', function(error) {
         console.error(error);
     });
+    self._audioContext = new AudioContext();
     self._whiteList = [];
 }
 
