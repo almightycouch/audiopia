@@ -1,20 +1,20 @@
 AudioPlayer = {
     audioElement: null,
 
+    initialize: function() {
+        var self = this;
+        self.audioElement = new Audio();
+        self.audioElement.addEventListener('canplay', function() {
+            this.play();
+        });
+        self.audioElement.addEventListener('ended', function() {
+        });
+        return self.audioElement;
+    },
     load: function(song) {
         var self = this;
-        if(!self.audioElement) {
-            self.audioElement = new Audio();
-            self.audioElement.addEventListener('canplay', function() {
-                this.play();
-            });
-            self.audioElement.addEventListener('ended', function() {
-            });
-        }
-
         var url = song.url;
-        if(!url) {
-        }
+        if(!url) { }
         self.loadFromUrl(url);
     },
     loadFromUrl: function(url) {

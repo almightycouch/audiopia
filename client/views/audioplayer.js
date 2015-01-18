@@ -1,29 +1,32 @@
 Template.AudioPlayer.created = function() {
-    this.audioElement = AudioPlayer.audioElement;
-    this._classPrefix = 'AudioPlayer-';
-    this.duration = new ReactiveVar(-1);
-    this.currentTime = new ReactiveVar(0);
+    var self = this;
+    self._classPrefix = 'audioplayer-';
+    self.audioElement = AudioPlayer.initialize();
+    self.duration = new ReactiveVar(-1);
+    self.currentTime = new ReactiveVar(0);
 }
 
 Template.AudioPlayer.rendered = function() {
     var self = this;
-    self.audioElement.addEventListener('play', function(event) {
-        $(self.firstNode).addClass(self._classPrefix + 'playing');
-    });
-    self.audioElement.addEventListener('pause', function(event) {
-        $(self.firstNode).removeClass(self._classPrefix + 'playing');
-    });
-    self.audioElement.addEventListener('volumechange', function(event) {
-        $(self.firstNode).toggleClass(self._classPrefix + 'muted', this.muted);
-        self.$('[data-role="volume-slider"] :first-child').height(Math.ceil(this.volume * 100) + '%');
-    });
-    self.audioElement.addEventListener('durationchange', function(event) {
-        self.duration.set(this.duration);
-    });
-    self.audioElement.addEventListener('timeupdate', function(event) {
-        self.currentTime.set(this.currentTime);
-        self.$('[data-role="progress-slider"] :last-child').width((this.currentTime / self.duration.get()) * 100 + '%');
-    });
+    if(!self._observing) {
+        self.audioElement.addEventListener('play', function(event) {
+            $(self.firstNode).addClass(self._classPrefix + 'playing');
+        });
+        self.audioElement.addEventListener('pause', function(event) {
+            $(self.firstNode).removeClass(self._classPrefix + 'playing');
+        });
+        self.audioElement.addEventListener('volumechange', function(event) {
+            $(self.firstNode).toggleClass(self._classPrefix + 'muted', this.muted);
+            self.$('[data-role="volume-slider"] :first-child').height(Math.ceil(this.volume * 100) + '%');
+        });
+        self.audioElement.addEventListener('durationchange', function(event) {
+            self.duration.set(this.duration);
+        });
+        self.audioElement.addEventListener('timeupdate', function(event) {
+            self.currentTime.set(this.currentTime);
+            self.$('[data-role="progress-slider"] :last-child').width((this.currentTime / self.duration.get()) * 100 + '%');
+        });
+    }
 }
 
 Template.AudioPlayer.helpers({
