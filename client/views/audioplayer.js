@@ -21,7 +21,7 @@ Template.AudioPlayer.rendered = function() {
         });
         self.audioElement.addEventListener('durationchange', function(event) {
             if(this.duration == Infinity) {
-                self.duration.set(AudioPlayer._currentSong.duration + 1);
+                self.duration.set(Session.get('currentSong').duration + 1);
             } else {
                 self.duration.set(this.duration);
             }
@@ -34,6 +34,9 @@ Template.AudioPlayer.rendered = function() {
 }
 
 Template.AudioPlayer.helpers({
+    song: function() {
+        return Session.get('currentSong');
+    },
     duration: function() {
         var self = Template.instance();
         return self.duration.get();

@@ -1,5 +1,4 @@
 AudioPlayer = {
-    _currentSong: null,
     audioElement: null,
 
     initialize: function() {
@@ -9,13 +8,13 @@ AudioPlayer = {
             this.play();
         });
         self.audioElement.addEventListener('ended', function() {
-            self._currentSong = null;
+            Session.set('currentSong', null);
         });
         return self.audioElement;
     },
     load: function(song) {
         var self = this;
-        self._currentSong = song;
+        Session.set('currentSong', song);
         if(song.url) {
             self.loadFromUrl(song.url);
         } else if(song.owner == Meteor.userId()) {
