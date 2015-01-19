@@ -21,12 +21,20 @@ AudioPlayer = {
                 successCallback();
             }
         };
+        var errorCallback2 = function(error) {
+            if(!(error instanceof Error)) {
+                error = new Error(error);
+            }
+            if(errorCallback) {
+                errorCallback(error);
+            }
+        };
         if(song.url) {
-            self.loadFromUrl(song.url, successCallback2, errorCallback);
+            self.loadFromUrl(song.url, successCallback2, errorCallback2);
         } else if(song.owner == Meteor.userId()) {
-            self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url, successCallback2, errorCallback);
+            self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url, successCallback2, errorCallback2);
         } else {
-            P2P.requestStream(song.owner, song._id, successCallback2, errorCallback);
+            P2P.requestStream(song.owner, song._id, successCallback2, errorCallback2);
         }
     },
     loadFromUrl: function(url, successCallback, errorCallback) {

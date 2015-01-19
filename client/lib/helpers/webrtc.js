@@ -62,6 +62,8 @@ WebRTC = function(userId, options) {
     }).on('error', function(error) {
         if(self._errorCallback) {
             self._errorCallback(error);
+        } else {
+            console.warning(error);
         }
     });
     self._audioContext = new AudioContext();
