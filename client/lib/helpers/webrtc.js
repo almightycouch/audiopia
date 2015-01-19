@@ -60,7 +60,9 @@ WebRTC = function(userId, options) {
             self._whiteList.splice(index, 1);
         }
     }).on('error', function(error) {
-        console.warn(error);
+        if(self._errorCallback) {
+            self._errorCallback(error);
+        }
     });
     self._audioContext = new AudioContext();
     self._whiteList = [];
@@ -80,8 +82,8 @@ WebRTC.prototype.connect = function(peerId, mediaId, successCallback, errorCallb
             }
         });
         conn.on('close', function() {
-            self._successCallback = null;
-            self._errorCallback = null;
+            self._successCallback = undefined;
+            self._errorCallback = undefined;
         });
     });
     return conn;
