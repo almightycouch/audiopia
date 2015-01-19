@@ -8,10 +8,23 @@ Template.AudioPlayer.created = function() {
 
 Template.AudioPlayer.rendered = function() {
     var self = this;
+    var tick = 0;
+    var updateCallback = function(currentTime) {
+        if(currentTime == undefined) {
+            if(!self.audioElement.paused) {
+                updateCallback((performance.now() - tick) / 1000);
+            }
+            setTimeout(updateCallback, 500);
+        } else {
+            self.currentTime.set(currentTime);
+            self.$('[data-role="progress-slider"] :last-child').width((currentTime / self.duration.get()) * 100 + '%');
+        }
+    };
     self.audioElement.addEventListener('canplay', function(event) {
         $(self.firstNode).removeClass(self._classPrefix + 'stopped');
     });
     self.audioElement.addEventListener('emptied', function(event) {
+        updateCallback(0);
         $(self.firstNode).addClass(self._classPrefix + 'stopped');
         $(self.firstNode).removeClass(self._classPrefix + 'playing');
     });
@@ -28,13 +41,16 @@ Template.AudioPlayer.rendered = function() {
     self.audioElement.addEventListener('durationchange', function(event) {
         var duration = this.duration;
         if(!duration || duration == Infinity) {
+            tick = performance.now();
+            updateCallback();
             duration = Session.get('currentSong').duration;
         }
         self.duration.set(duration);
     });
     self.audioElement.addEventListener('timeupdate', function(event) {
-        self.currentTime.set(this.currentTime);
-        self.$('[data-role="progress-slider"] :last-child').width((this.currentTime / self.duration.get()) * 100 + '%');
+        if(this.seekable.length) {
+            updateCallback(this.currentTime);
+        }
     });
 }
 
