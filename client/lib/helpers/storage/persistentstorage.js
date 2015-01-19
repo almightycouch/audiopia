@@ -53,8 +53,8 @@ PersistentStorage.prototype.writeFile = function(filePath, blob, successCallback
                 self.createPath(filePath, function(dirEntry) {
                     self.writeFile(filePath, blob, successCallback, errorCallback);
                 }, errorCallback);
-            } else if(error.name == 'InvalidModificationError') {
-                self.readFile(filePath, successCallback, errorCallback);
+         /* } else if(error.name == 'InvalidModificationError') {
+                self.readFile(filePath, successCallback, errorCallback); */
             } else {
                 errorCallback(error);
             }

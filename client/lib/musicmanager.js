@@ -26,7 +26,13 @@ MusicManager = {
                     }));
                     self.pushSong(_.extend(song, { _id: id }));
                     asyncCallback();
-                },  asyncCallback);
+                },  function(error) {
+                    if(error.name != 'InvalidModificationError') {
+                        asyncCallback(error);
+                    } else {
+                        asyncCallback();
+                    }
+                });
             }).on('done', function(error) {
                 if(error) {
                     asyncCallback();

@@ -29,12 +29,6 @@
 .audioplayer-playpause-button {
     width: 2.5em; /* 40 */
     height: 100%;
-    text-align: left;
-    text-indent: -9999px;
-    cursor: pointer;
-    z-index: 2;
-    top: 0;
-    left: 0;
 }
 
 .audioplayer:not(.audioplayer-mini) .audioplayer-playpause-button {
@@ -52,47 +46,27 @@
 }
 
 .audioplayer-playpause-button a {
-    display: block;
+    display: inline-block;
+    font-family: FontAwesome;
+    font-weight: normal;
+    line-height: 1;
+    color: white;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
 }
 
-.audioplayer:not(.audioplayer-playing) .audioplayer-playpause-button a {
-    width: 0;
-    height: 0;
-    border: 0.5em solid transparent; /* 8 */
-    border-right: none;
-    border-left-color: #fff;
-    content: '';
+.audioplayer .audioplayer-playpause-button a:before {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -0.5em 0 0 -0.25em; /* 8 4 */
+    width: 100%;
+    line-height: 0.2em;
 }
 
-.audioplayer-playing .audioplayer-playpause-button a {
-    width: 0.75em; /* 12 */
-    height: 0.75em; /* 12 */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -0.375em 0 0 -0.375em; /* 6 */
-}
-
-.audioplayer-playing .audioplayer-playpause-button a:before,
-.audioplayer-playing .audioplayer-playpause-button a:after {
-    width: 40%;
-    height: 100%;
-    background-color: #fff;
-    content: '';
-    position: absolute;
-    top: 0;
+.audioplayer:not(.audioplayer-playing) .audioplayer-playpause-button a:before {
+    content: "\f04b";
 }
 
 .audioplayer-playing .audioplayer-playpause-button a:before {
-    left: 0;
-}
-
-.audioplayer-playing .audioplayer-playpause-button a:after {
-    right: 0;
+    content: "\f04c";
 }
 
 .audioplayer-time {
