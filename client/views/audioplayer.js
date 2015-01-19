@@ -8,25 +8,10 @@ Template.AudioPlayer.created = function() {
 
 Template.AudioPlayer.rendered = function() {
     var self = this;
-    var tick = 0;
-    var timerUpdate = function(currentTime) {
-        if(!currentTime) {
-            if(!self.audioElement.paused) {
-                tick += 0.01;
-                timerUpdate(tick);
-                tick += 1;
-                setTimeout(timerUpdate, 1000);
-            }
-        } else {
-            self.currentTime.set(currentTime);
-            self.$('[data-role="progress-slider"] :last-child').width((currentTime / self.duration.get()) * 100 + '%');
-        }
-    };
     self.audioElement.addEventListener('canplay', function(event) {
         $(self.firstNode).removeClass(self._classPrefix + 'stopped');
     });
     self.audioElement.addEventListener('emptied', function(event) {
-        tick = 0;
         $(self.firstNode).addClass(self._classPrefix + 'stopped');
         $(self.firstNode).removeClass(self._classPrefix + 'playing');
     });
@@ -48,14 +33,8 @@ Template.AudioPlayer.rendered = function() {
         self.duration.set(duration);
     });
     self.audioElement.addEventListener('timeupdate', function(event) {
-        if(this.seekable.length) {
-            timerUpdate(this.currentTime);
-        }
-    });
-    self.audioElement.addEventListener('progress', function(event) {
-        if(!this.seekable.length && !tick) {
-            timerUpdate();
-        }
+        self.currentTime.set(this.currentTime);
+        self.$('[data-role="progress-slider"] :last-child').width((this.currentTime / self.duration.get()) * 100 + '%');
     });
 }
 
