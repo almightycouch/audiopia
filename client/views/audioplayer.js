@@ -2,41 +2,43 @@ Template.AudioPlayer.created = function() {
     var self = this;
     self._classPrefix = 'audioplayer-';
     self.audioElement = AudioPlayer.initialize();
-    self.duration = new ReactiveVar(-1);
+    self.duration = new ReactiveVar(Infinity);
     self.currentTime = new ReactiveVar(0);
 }
 
 Template.AudioPlayer.rendered = function() {
     var self = this;
-    if(!self._observing) {
-        self.audioElement.addEventListener('play', function(event) {
-            $(self.firstNode).addClass(self._classPrefix + 'playing');
-        });
-        self.audioElement.addEventListener('pause', function(event) {
-            $(self.firstNode).removeClass(self._classPrefix + 'playing');
-        });
-        self.audioElement.addEventListener('volumechange', function(event) {
-            $(self.firstNode).toggleClass(self._classPrefix + 'muted', this.muted);
-            self.$('[data-role="volume-slider"] :first-child').height(Math.ceil(this.volume * 100) + '%');
-        });
-        self.audioElement.addEventListener('durationchange', function(event) {
-            if(this.duration == Infinity) {
-                self.duration.set(Session.get('currentSong').duration + 1);
-            } else {
-                self.duration.set(this.duration);
-            }
-        });
-        self.audioElement.addEventListener('timeupdate', function(event) {
-            self.currentTime.set(this.currentTime);
-            self.$('[data-role="progress-slider"] :last-child').width((this.currentTime / self.duration.get()) * 100 + '%');
-        });
-    }
+    self.audioElement.addEventListener('canplay', function(event) {
+        $(self.firstNode).removeClass(self._classPrefix + 'stopped');
+    });
+    self.audioElement.addEventListener('emptied', function(event) {
+        $(self.firstNode).addClass(self._classPrefix + 'stopped');
+        $(self.firstNode).removeClass(self._classPrefix + 'playing');
+    });
+    self.audioElement.addEventListener('play', function(event) {
+        $(self.firstNode).addClass(self._classPrefix + 'playing');
+    });
+    self.audioElement.addEventListener('pause', function(event) {
+        $(self.firstNode).removeClass(self._classPrefix + 'playing');
+    });
+    self.audioElement.addEventListener('volumechange', function(event) {
+        $(self.firstNode).toggleClass(self._classPrefix + 'muted', this.muted);
+        self.$('[data-role="volume-slider"] :first-child').height(Math.ceil(this.volume * 100) + '%');
+    });
+    self.audioElement.addEventListener('durationchange', function(event) {
+        var duration = this.duration;
+        if(!duration || duration == Infinity) {
+            duration = Session.get('currentSong').duration;
+        }
+        self.duration.set(duration);
+    });
+    self.audioElement.addEventListener('timeupdate', function(event) {
+        self.currentTime.set(this.currentTime);
+        self.$('[data-role="progress-slider"] :last-child').width((this.currentTime / self.duration.get()) * 100 + '%');
+    });
 }
 
 Template.AudioPlayer.helpers({
-    song: function() {
-        return Session.get('currentSong');
-    },
     duration: function() {
         var self = Template.instance();
         return self.duration.get();
@@ -50,10 +52,12 @@ Template.AudioPlayer.helpers({
 Template.AudioPlayer.events({
     'click [data-role="play-button"]': function(event, template) {
         var self = template;
-        if(!self.audioElement.paused) {
-            self.audioElement.pause();
-        } else {
-            self.audioElement.play();
+        if(self.audioElement.readyState == self.audioElement.HAVE_ENOUGH_DATA) {
+            if(!self.audioElement.paused) {
+                self.audioElement.pause();
+            } else {
+                self.audioElement.play();
+            }
         }
     },
     'click [data-role="volume-button"]': function(event, template) {

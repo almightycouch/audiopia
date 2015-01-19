@@ -4,9 +4,6 @@ AudioPlayer = {
     initialize: function() {
         var self = this;
         self.audioElement = new Audio();
-        self.audioElement.addEventListener('canplay', function() {
-            this.play();
-        });
         self.audioElement.addEventListener('ended', function() {
             Session.set('currentSong', null);
         });
@@ -14,27 +11,31 @@ AudioPlayer = {
     },
     load: function(song, successCallback, errorCallback) {
         var self = this;
-        if(song.url) {
-            self.loadFromUrl(song.url);
-        } else if(song.owner == Meteor.userId()) {
-            self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url);
-        } else {
-            P2P.requestStream(song.owner, song._id, function() {
-                Session.set('currentSong', song);
-                if(successCallback) {
-                    successCallback();
-                }
-            }, errorCallback);
-            return;
+        if(self.audioElement.currentSrc) {
+            Session.set('currentSong', undefined);
+            self.audioElement.src = null;
         }
-        Session.set('currentSong', song);
-        if(successCallback) {
-            successCallback();
+        var successCallback2 = function() {
+            Session.set('currentSong', song);
+            if(successCallback) {
+                successCallback();
+            }
+        };
+        if(song.url) {
+            self.loadFromUrl(song.url, successCallback2, errorCallback);
+        } else if(song.owner == Meteor.userId()) {
+            self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url, successCallback2, errorCallback);
+        } else {
+            P2P.requestStream(song.owner, song._id, successCallback2, errorCallback);
         }
     },
-    loadFromUrl: function(url) {
+    loadFromUrl: function(url, successCallback, errorCallback) {
         var self = this;
         self.audioElement.src = url;
         self.audioElement.load();
+        if(successCallback) {
+            successCallback();
+        }
+        self.audioElement.play();
     }
 }
