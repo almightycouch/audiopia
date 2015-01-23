@@ -13,6 +13,9 @@
 
 .tm-sidebar {
     width: 240px;
+    font-family: "Open Sans Condensed";
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
     background: #2b2b2b url("@{image-path}/sidebar-bg.png");
     background-size: 35px;
     ul.uk-nav[role="navigation"] li {
@@ -33,6 +36,10 @@
                 min-width: 30px;
                 float: right;
                 margin-top: 5px;
+                font-family: "Inconsolata";
+                font-weight: 700;
+                -webkit-font-smoothing: antialiased;
+                border: 0;
             }
         }
         &.uk-active:not(.uk-parent) {
@@ -76,3 +83,7 @@
 }
 
 @import "audioplayer.import.less";
+
+@import url(http://fonts.googleapis.com/css?family=Inconsolata:400,700);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700);

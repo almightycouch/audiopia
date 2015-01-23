@@ -21,11 +21,11 @@ Template.AudioPlayer.rendered = function() {
         }
     };
     self.audioElement.addEventListener('canplay', function(event) {
-        $(self.firstNode).removeClass(self._classPrefix + 'stopped');
+        $(self.firstNode).removeClass(self._classPrefix + 'disabled');
     });
     self.audioElement.addEventListener('emptied', function(event) {
         updateCallback(0);
-        $(self.firstNode).addClass(self._classPrefix + 'stopped');
+        $(self.firstNode).addClass(self._classPrefix + 'disabled');
         $(self.firstNode).removeClass(self._classPrefix + 'playing');
     });
     self.audioElement.addEventListener('play', function(event) {
