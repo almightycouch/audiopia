@@ -34,7 +34,9 @@ AudioPlayer = {
         } else if(song.owner == Meteor.userId()) {
             self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url, successCallback2, errorCallback2);
         } else {
-            P2P.requestStream(song.owner, song._id, successCallback2, errorCallback2);
+            P2P.requestStream(song.owner, song._id, function(url) {
+                self.loadFromUrl(url, successCallback2, errorCallback2);
+            }, errorCallback2);
         }
     },
     loadFromUrl: function(url, successCallback, errorCallback) {

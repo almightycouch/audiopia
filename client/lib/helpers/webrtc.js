@@ -55,7 +55,7 @@ WebRTC = function(userId, options) {
         if(~index) {
             call.answer(null);
             call.on('stream', function(stream) {
-                AudioPlayer.loadFromUrl(URL.createObjectURL(stream), self._successCallback, self._errorCallback);
+                self._successCallback(URL.createObjectURL(stream));
             });
             self._whiteList.splice(index, 1);
         }
