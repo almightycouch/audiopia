@@ -4,12 +4,16 @@
 @icon-font-path: "static/fonts";
 
 @base-body-font-family: "Open Sans";
+@base-heading-font-family: "Open Sans Condensed";
+@base-heading-font-weight: 300;
 @base-body-font-size: 11px;
 @base-body-font-weight: normal;
 
 .hook-base-body() {
     background: #f4f4f4 url("@{image-path}/body-bg.png");
     background-size: 63px;
+    letter-spacing: 0.8px;
+    -webkit-font-smoothing: antialiased;
 }
 
 // @import "uikit/components/accordion.import.less";

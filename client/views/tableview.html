@@ -1,18 +1,24 @@
 <template name="TableView">
-    <table class="tm-tableview uk-table uk-table-striped uk-table-condensed">
+    <table class="tm-tableview uk-table">
+        <caption>
+        </caption>
         <thead>
             <tr>
+                <th><input type="checkbox"></th>
                 <th class="uk-width-1-3">Title</th>
-                <th class="uk-width-1-6">Artist</th>
-                <th class="uk-width-1-6">Album</th>
+                <th class="uk-width-1-4">Artist</th>
+                <th class="uk-width-1-4">Album</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
         {{#each model}}
             <tr>
+                <td><input type="checkbox"></td>
                 <td>{{title}}</td>
                 <td>{{artist}}</td>
                 <td>{{album}}</td>
+                <td>{{formatSecs duration}}</td>
             </tr>
         {{/each}}
         </tbody>

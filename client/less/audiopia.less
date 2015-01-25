@@ -13,9 +13,11 @@
 
 .tm-sidebar {
     width: 240px;
-    font-family: "Open Sans Condensed";
+    font-family: @base-heading-font-family;
+    font-weight: @base-heading-font-weight;
     text-transform: uppercase;
     letter-spacing: 1.4px;
+    -webkit-font-smoothing: initial;
     background: #2b2b2b url("@{image-path}/sidebar-bg.png");
     background-size: 35px;
     ul.uk-nav[role="navigation"] li {
@@ -36,10 +38,10 @@
                 min-width: 30px;
                 float: right;
                 margin-top: 5px;
-                font-family: "Inconsolata";
-                font-weight: 700;
-                -webkit-font-smoothing: antialiased;
-                border: 0;
+                font-family: @base-code-font-family;
+                font-weight: 400;
+                font-size: 10px;
+                border-width: 0;
             }
         }
         &.uk-active:not(.uk-parent) {
@@ -72,9 +74,78 @@
 .tm-wrapper {
     overflow-y: scroll !important;
     .tm-tableview {
+        display:table;
+        table-layout: fixed;
+        caption {
+            min-height: 80px;
+            background-image: linear-gradient(#f0f3f9, #e8ecf5);
+            border-bottom: 1px solid #ced9e3;
+        }
+        thead {
+            tr {
+                th {
+                    position: relative;
+                    color: #8991a6;
+                    font-weight: 600;
+                    -webkit-font-smoothing: initial;
+                    text-shadow: 0 1px #f7f7f7;
+                    background-image: linear-gradient(#edf0f8, #e8ecf5);
+                    border-top: 1px solid #f7f8fc;
+                    border-bottom: 1px solid #ced9e3;
+                    &:before {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        width: 1px;
+                        content: "";
+                        background-image: linear-gradient(to top, #f7f7f7 0%, transparent 80%);
+                        border-width: 0;
+                        border-left: 1px solid transparent;
+                        border-image: linear-gradient(to top, #c2d1dc 0%, transparent 80%);
+                        border-image-slice: 1;
+                    }
+                    &:after {
+                        position: absolute;
+                        content: "";
+                        left: -1px;
+                        right: 0;
+                        bottom: -3px;
+                        border-top: 1px solid #ebedf3;
+                        border-bottom: 1px solid #f6f7fa;
+                    }
+                    &:first-child {
+                        width: 20px;
+                        .uk-text-center;
+                    }
+                    &:last-child {
+                        width: 40px;
+                    }
+                }
+            }
+        }
         tbody {
+            background-color: white;
             tr {
                 cursor: pointer;
+                td {
+                    overflow: hidden;
+                    color: #5b6173;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    border-bottom: 1px solid #dde8ef;
+                    &:first-child {
+                        .uk-text-center;
+                    }
+                    &:last-child {
+                        font-family: @base-code-font-family;
+                        letter-spacing: 0;
+                        .uk-text-center;
+                    }
+                }
+                &:nth-child(odd) {
+                    background-color: #fbfcfe;
+                }
             }
         }
     }
@@ -85,5 +156,5 @@
 @import "audioplayer.import.less";
 
 @import url(http://fonts.googleapis.com/css?family=Inconsolata:400,700);
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700);
