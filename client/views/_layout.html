@@ -9,33 +9,29 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
 </head>
-<body>
-</body>
 
 <template name="_layout">
-    <main class="tm-layout">
-        <nav class="tm-sidebar">
-            <ul class="uk-nav uk-nav-parent-icon" data-uk-nav="{multiple:true}" role="navigation">
-                <li class="{{activeRoute 'dashboard'}}"><a href="{{pathFor 'dashboard'}}"><i class="uk-icon-dashboard"></i> Dashboard</a></li>
-                <li class="uk-active uk-parent">
-                    <a href="#"><i class="uk-icon-music"></i> Music</a>
-                    <ul class="uk-nav-sub">
-                        <li class="{{activeRoute 'music'}}"><a href="{{pathFor 'music'}}"><i class="uk-icon-cloud"></i> Online<span class="uk-badge uk-badge-notification">{{onlineCount}}</span></a></li>
-                        <li class="{{activeRoute 'music' hash='me'}}"><a href="{{pathFor 'music' hash='me'}}"><i class="uk-icon-download"></i> Local Storage<span class="uk-badge uk-badge-notification">{{localCount}}</span></a></li>
-                    </ul>
-                </li>
-                <li class="uk-parent">
-                    <a href="#"><i class="uk-icon-sliders"></i> Settings</a>
-                    <ul class="uk-nav-sub"></ul>
-                </li>
-                <li><a href="#"><i class="uk-icon-users"></i> Community</a></li>
-            </ul>
-        </nav>
-        <div class="tm-wrapper">
-            {{> yield}}
-        </div>
-        <div class="uk-position-bottom">
-            {{> AudioPlayer}}
-        </div>
+    <main>
+        {{> yield}}
     </main>
+    <nav role="menu">
+        <ul class="uk-nav uk-nav-parent-icon" data-uk-nav="{multiple:true}" role="navigation">
+            <li class="{{activeRoute 'dashboard'}}"><a href="{{pathFor 'dashboard'}}"><i class="uk-icon-dashboard"></i> Dashboard</a></li>
+            <li class="uk-active uk-parent">
+                <a href="#"><i class="uk-icon-music"></i> Music</a>
+                <ul class="uk-nav-sub">
+                    <li class="{{activeRoute 'music'}}"><a href="{{pathFor 'music'}}"><i class="uk-icon-cloud"></i> Online<span class="uk-badge uk-badge-notification">{{onlineCount}}</span></a></li>
+                    <li class="{{activeRoute 'music' hash='me'}}"><a href="{{pathFor 'music' hash='me'}}"><i class="uk-icon-download"></i> Local Storage<span class="uk-badge uk-badge-notification">{{localCount}}</span></a></li>
+                </ul>
+            </li>
+            <li class="uk-parent">
+                <a href="#"><i class="uk-icon-sliders"></i> Settings</a>
+                <ul class="uk-nav-sub"></ul>
+            </li>
+            <li><a href="#"><i class="uk-icon-users"></i> Community</a></li>
+        </ul>
+    </nav>
+    <footer>
+        {{> AudioPlayer}}
+    </footer>
 </template>
