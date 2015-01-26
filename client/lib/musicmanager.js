@@ -1,6 +1,6 @@
 MusicManager = {
-    localStorage: new PersistentStorage(),
     localCollection: new Ground.Collection('music', { connection: null }),
+    localStorage: null,
 
     addSongs: function(files, errorCallback) {
         var self = this;
