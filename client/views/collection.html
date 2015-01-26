@@ -1,7 +1,12 @@
 <template name="Collection">
     <section class="collection">
         <aside>
-            <div></div>
+            <form class="uk-form uk-align-right">
+                <div class="uk-form-icon">
+                    <i class="uk-icon-search"></i>
+                    <input type="text" role="search">
+                </div>
+            </form>
         </aside>
         <table class="uk-table">
             <thead>
@@ -14,7 +19,7 @@
                 </tr>
             </thead>
             <tbody>
-            {{#each model}}
+            {{#each songs}}
                 <tr>
                     <td><input type="checkbox"></td>
                     <td>{{title}}</td>
