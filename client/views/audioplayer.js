@@ -11,10 +11,12 @@ Template.AudioPlayer.rendered = function() {
     var tick = 0;
     var updateCallback = function(currentTime) {
         if(currentTime == undefined) {
-            if(!self.audioElement.paused) {
-                updateCallback((performance.now() - tick) / 1000);
+            if(tick) {
+                if(!self.audioElement.paused) {
+                    updateCallback((performance.now() - tick) / 1000);
+                }
+                setTimeout(updateCallback, 500);
             }
-            setTimeout(updateCallback, 500);
         } else {
             self.currentTime.set(currentTime);
             self.$('[data-role="progress-slider"] :last-child').width((currentTime / self.duration.get()) * 100 + '%');
@@ -44,6 +46,8 @@ Template.AudioPlayer.rendered = function() {
             tick = performance.now();
             updateCallback();
             duration = Session.get('currentSong').duration;
+        } else if(tick) {
+            tick = 0;
         }
         self.duration.set(duration);
     });
