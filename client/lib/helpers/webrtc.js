@@ -60,10 +60,16 @@ WebRTC = function(userId, options) {
             self._whiteList.splice(index, 1);
         }
     }).on('error', function(error) {
-        if(self._errorCallback) {
+        if(error.type == 'network') {
+            console.warn(error.message);
+            console.log('will try to reconnect in 5s');
+            setTimeout(function() {
+                self.peer.reconnect();
+            }, 5000);
+        } else if(self._errorCallback) {
             self._errorCallback(error);
         } else {
-            console.warn(error);
+            console.warn(error.message);
         }
     });
     self._audioContext = new AudioContext();
@@ -73,20 +79,34 @@ WebRTC = function(userId, options) {
 WebRTC.prototype.connect = function(peerId, mediaId, successCallback, errorCallback) {
     var self = this;
     self._whiteList.push(mediaId);
+    self._successCallback = function(stream) {
+        if(successCallback) {
+            successCallback(stream);
+        }
+    }
+    self._errorCallback = function(error) {
+        if(errorCallback) {
+            errorCallback(error);
+        }
+        self._successCallback = undefined;
+        self._errorCallback = undefined;
+    }
     conn = self.peer.connect(peerId, { metadata: { id: mediaId } });
-    conn.on('open', function() {
-        self._successCallback = successCallback;
-        self._errorCallback = errorCallback;
-        conn.on('data', function(data) {
-            if(errorCallback && 'error' in data) {
-                errorCallback(data.error);
-                conn.close();
-            }
+    if(!conn) {
+        errorCallback(new Error('Could not connect to peer ' + peerId));
+    } else {
+        conn.on('open', function() {
+            conn.on('data', function(data) {
+                if(errorCallback && 'error' in data) {
+                    errorCallback(data.error);
+                    conn.close();
+                }
+            });
+            conn.on('close', function() {
+                self._successCallback = undefined;
+                self._errorCallback = undefined;
+            });
         });
-        conn.on('close', function() {
-            self._successCallback = undefined;
-            self._errorCallback = undefined;
-        });
-    });
+    }
     return conn;
 }
