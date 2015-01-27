@@ -61,5 +61,18 @@ MusicManager = {
         _.each(self.localCollection.find().fetch(), function(song) {
             self.pushSong(song, null, errorCallback);
         });
+    },
+    clear : function(successCallback, errorCallback) {
+        var self = this;
+        Meteor.call('clear', function(error, total) {
+            if(!error) {
+                self.localStorage.clear(function() {
+                    self.localCollection.remove({});
+                    successCallback();
+                }, errorCallback);
+            } else {
+                errorCallback(error);
+            }
+        });
     }
 }
