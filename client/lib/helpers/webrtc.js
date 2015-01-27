@@ -19,7 +19,7 @@ WebRTC = function(userId, options) {
                         var remote = context.createMediaStreamDestination();
                         var source = context.createBufferSource();
                         source.buffer = buffer;
-                        source.start(0);
+                        source.start();
                         source.connect(remote);
                         var stream = self.peer.call(conn.peer, remote.stream, { metadata: { id: song._id } });
                         var checkCounter = 0;
@@ -76,7 +76,11 @@ WebRTC = function(userId, options) {
             console.warn(error.message);
         }
     });
-    self._audioContext = new AudioContext();
+    try {
+        self._audioContext = new AudioContext();
+    } catch(error) {
+        self._audioContext = new webkitAudioContext();
+    }
     self._whiteList = [];
 }
 

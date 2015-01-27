@@ -32,7 +32,12 @@ IndexedDBStorage.prototype.readFile = function(filePath, successCallback, errorC
         errorCallback(new Error('Transaction error.'));
     }
     transaction.objectStore('music').get(filePath).onsuccess = function(event) {
-        successCallback(event.target.result);
+        var blob = event.target.result;
+        if(!(blob instanceof Blob)) {
+            errorCallback(new Error('Failed to decode data.'));
+        } else {
+            successCallback(blob);
+        }
     }
 }
 
@@ -47,12 +52,19 @@ IndexedDBStorage.prototype.readFileFromUrl = function(url, successCallback, erro
 
 IndexedDBStorage.prototype.writeFile = function(filePath, blob, successCallback, errorCallback) {
     var self = this;
-    var transaction = self.db.transaction(['music'], 'readwrite');
-    transaction.onerror = function(event) {
-        errorCallback(new Error('Transaction error.'));
+    var storeCallback = function(blob, filePath) {
+        var transaction = self.db.transaction(['music'], 'readwrite');
+        transaction.onerror = function(event) {
+            errorCallback(new Error('Transaction error.'));
+        }
+        transaction.objectStore('music').put(blob, filePath).onsuccess = function(event) {
+            successCallback(self._urlPrefix + escape(filePath));
+        }
     }
-    transaction.objectStore('music').put(blob, filePath).onsuccess = function(event) {
-        successCallback(self._urlPrefix + escape(filePath));
+    try {
+        storeCallback(blob, filePath);
+    } catch(error) {
+        storeCallback(URL.createObjectURL(blob), filePath);
     }
 }
 

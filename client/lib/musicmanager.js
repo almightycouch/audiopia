@@ -66,8 +66,8 @@ MusicManager = {
         var self = this;
         Meteor.call('clear', function(error, total) {
             if(!error) {
+                self.localCollection.remove({});
                 self.localStorage.clear(function() {
-                    self.localCollection.remove({});
                     successCallback();
                 }, errorCallback);
             } else {
