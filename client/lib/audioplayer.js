@@ -41,11 +41,20 @@ AudioPlayer = {
     },
     loadFromUrl: function(url, successCallback, errorCallback) {
         var self = this;
-        self.audioElement.src = url;
-        self.audioElement.load();
-        if(successCallback) {
-            successCallback();
+        var loadCallback = function(url) {
+            self.audioElement.src = url;
+            self.audioElement.load();
+            if(successCallback) {
+                successCallback();
+            }
+            self.audioElement.play();
         }
-        self.audioElement.play();
+        if(url.indexOf('indexeddb:') != 0) {
+            loadCallback(url);
+        } else {
+            MusicManager.localStorage.readFileFromUrl(url, function(fileEntry) {
+                loadCallback(URL.createObjectURL(fileEntry));
+            }, errorCallback);
+        }
     }
 }

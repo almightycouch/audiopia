@@ -1,7 +1,7 @@
-PersistentStorage = function() {
+FilesystemStorage = function() {
     var self = this;
     if(!window.webkitRequestFileSystem) {
-        throw new TypeError('Your browser does not support the Filesystem API.');
+        throw new Error('Your browser does not support the Filesystem API.');
     }
     navigator.webkitPersistentStorage.requestQuota(2*1024*1024*1024 /* 2GB */, function(grantedBytes) {
         window.webkitRequestFileSystem(window.PERSISTENT, grantedBytes, function(filesystem) {
@@ -10,18 +10,18 @@ PersistentStorage = function() {
     });
 }
 
-PersistentStorage.prototype.readFile = function(filePath, successCallback, errorCallback) {
+FilesystemStorage.prototype.readFile = function(filePath, successCallback, errorCallback) {
     var self = this;
     self.root.getFile(filePath, {}, function(fileEntry) {
         successCallback(fileEntry);
     }, errorCallback);
 }
 
-PersistentStorage.prototype.readFileFromUrl = function(url, successCallback, errorCallback) {
+FilesystemStorage.prototype.readFileFromUrl = function(url, successCallback, errorCallback) {
     window.webkitResolveLocalFileSystemURL(url, successCallback, errorCallback);
 }
 
-PersistentStorage.prototype.createPath = function(path, successCallback, errorCallback) {
+FilesystemStorage.prototype.createPath = function(path, successCallback, errorCallback) {
     var self = this;
     var createDir = function(root, folders) {
         root.getDirectory(folders[0], {create: true}, function(dirEntry) {
@@ -38,12 +38,12 @@ PersistentStorage.prototype.createPath = function(path, successCallback, errorCa
 }
 
 
-PersistentStorage.prototype.writeFile = function(filePath, blob, successCallback, errorCallback) {
+FilesystemStorage.prototype.writeFile = function(filePath, blob, successCallback, errorCallback) {
     var self = this;
     self.root.getFile(filePath, {create: true, exclusive: true}, function(fileEntry) {
         fileEntry.createWriter(function(fileWriter) {
             fileWriter.onwriteend = function(event) {
-                successCallback(fileEntry);
+                successCallback(fileEntry.toURL());
             };
             fileWriter.write(blob);
         }, errorCallback);
@@ -61,5 +61,35 @@ PersistentStorage.prototype.writeFile = function(filePath, blob, successCallback
         } else {
             errorCallback(error);
         }
+    });
+}
+
+FilesystemStorage.prototype.clear = function(successCallback, errorCallback) {
+    var self = this;
+    var successCallback2 = function() {
+        if(successCallback) {
+            successCallback();
+        }
+    }
+    var errorCallback2 = function(error) {
+        if(errorCallback) {
+            errorCallback(error);
+        }
+    }
+    self.root.createReader().readEntries(function(results) {
+        for(var i in results) {
+            var entry = results[i];
+            if(!entry.isFile) {
+                entry.removeRecursively(function() {
+                }, errorCallback2);
+            } else {
+                entry.remove(function() {
+                }, errorCallback2);
+            }
+        }
+
+        successCallback2();
+    }, function(error) {
+        errorCallback2(error);
     });
 }

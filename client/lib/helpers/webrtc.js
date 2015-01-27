@@ -13,9 +13,9 @@ WebRTC = function(userId, options) {
         } else {
             MusicManager.localStorage.readFileFromUrl(song.url, function(fileEntry) {
                 var reader = new FileReader();
-                reader.onloadend = (function(e) {
+                reader.onloadend = (function(event) {
                     var context = self._audioContext;
-                    context.decodeAudioData(e.target.result, function(buffer) {
+                    context.decodeAudioData(event.target.result, function(buffer) {
                         var remote = context.createMediaStreamDestination();
                         var source = context.createBufferSource();
                         source.buffer = buffer;
@@ -36,16 +36,20 @@ WebRTC = function(userId, options) {
                             }
                         };
                         checkMediaConnection();
-                    }, function() {
+                    }, function(error) {
                         sendError('Failed to decode audio file.');
                     });
                 });
                 reader.onerror = (function(e) {
                     sendError('Failed to read audio file.');
                 });
-                fileEntry.file(function(file) {
-                    reader.readAsArrayBuffer(file);
-                });
+                if(fileEntry instanceof Blob) {
+                    reader.readAsArrayBuffer(fileEntry);
+                } else {
+                    fileEntry.file(function(file) {
+                        reader.readAsArrayBuffer(file);
+                    });
+                }
             }, function(error) {
                 sendError('Failed to retrieve audio file.');
             });

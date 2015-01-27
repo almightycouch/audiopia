@@ -5,7 +5,7 @@ MusicManager = {
     addSongs: function(files, errorCallback) {
         var self = this;
         async.eachSeries(files, function(file, asyncCallback) {
-            var path = file.webkitRelativePath;
+            var path = file.webkitRelativePath || file.name;
             var meta = musicmetadata(file, { duration: true });
             meta.on('metadata', function(result) {
                 var song = {
@@ -20,9 +20,9 @@ MusicManager = {
                 self.localStorage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(
                     _.extend(song, {
                         extension: path.substr(path.lastIndexOf('.') + 1)
-                    })), file, function(entry) {
+                    })), file, function(url) {
                     var id = self.localCollection.insert(_.extend(song, {
-                        url: entry.toURL()
+                        url: url
                     }));
                     self.pushSong(_.extend(song, { _id: id }));
                     asyncCallback();
