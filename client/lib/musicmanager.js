@@ -1,7 +1,23 @@
 MusicManager = {
-    localCollection: new Ground.Collection('music', { connection: null }),
     localStorage: null,
+    localCollection: null,
 
+    initialize: function() {
+        var self = this;
+        try {
+            self.localStorage = new FilesystemStorage();
+        } catch(error) {
+            try {
+                self.localStorage = new IndexedDBStorage();
+            } catch(error) {
+                self.localStorage = new TemporaryStorage();
+                self.localCollection = new Mongo.Collection(null);
+            }
+        }
+        if(!self.localCollection) {
+            self.localCollection = new Ground.Collection('music', { connection: null });
+        }
+    },
     addSongs: function(files, errorCallback) {
         var self = this;
         async.eachSeries(files, function(file, asyncCallback) {

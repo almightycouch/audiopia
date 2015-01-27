@@ -2,11 +2,13 @@ IndexedDBStorage = function() {
     var self = this;
 
     window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-    if(!window.indexedDB) {
-        throw new Error('Your browser does not support the IndexedDB API.');
-    }
     window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
     window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+    if(!window.indexedDB) {
+        throw new Error('Your browser does not support the IndexedDB API.');
+    } else if(false) { // TODO
+        throw(new Error('Your browser does not support the IndexedDB Blob storage feature.'));
+    }
 
     self._urlPrefix = 'indexeddb:' + window.location.origin + '/persistent/';
 
@@ -52,7 +54,7 @@ IndexedDBStorage.prototype.readFileFromUrl = function(url, successCallback, erro
 
 IndexedDBStorage.prototype.writeFile = function(filePath, blob, successCallback, errorCallback) {
     var self = this;
-    var storeCallback = function(blob, filePath) {
+    try {
         var transaction = self.db.transaction(['music'], 'readwrite');
         transaction.onerror = function(event) {
             errorCallback(new Error('Transaction error.'));
@@ -60,11 +62,8 @@ IndexedDBStorage.prototype.writeFile = function(filePath, blob, successCallback,
         transaction.objectStore('music').put(blob, filePath).onsuccess = function(event) {
             successCallback(self._urlPrefix + escape(filePath));
         }
-    }
-    try {
-        storeCallback(blob, filePath);
     } catch(error) {
-        storeCallback(URL.createObjectURL(blob), filePath);
+        errorCallback(error);
     }
 }
 

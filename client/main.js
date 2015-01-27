@@ -6,14 +6,8 @@ Meteor.startup(function () {
         return;
     }
     */
-
-    try {
-        MusicManager.localStorage = new FilesystemStorage();
-    } catch(error) {
-        MusicManager.localStorage = new IndexedDBStorage();
-    }
-
     Meteor.subscribe('music');
+    MusicManager.initialize();
     Tracker.autorun(function() {
         var userId = Meteor.userId();
         if(!userId) {
