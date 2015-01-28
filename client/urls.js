@@ -11,11 +11,12 @@ Router.route('/', function() {
 
 Router.route('/music/', function() {
     var self = this;
+    var hash = self.params.hash;
     self.render('Collection', {
         data: {
             fields: { track: true, title: true, album: true, artist: true, duration: true, url: true, owner: true },
             sort: { artist: 1, year: -1, album: 1, track: 1 },
-            collection: self.params.hash == 'me' ? MusicManager.localCollection : MusicCollection
+            collection: hash == 'me' ? MusicManager.localCollection : MusicCollection,
         }
     });
 }, {

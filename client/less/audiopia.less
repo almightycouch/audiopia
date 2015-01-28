@@ -12,6 +12,8 @@ main {
         table {
             display: table;
             table-layout: fixed;
+            -webkit-user-select: none;  
+            -moz-user-select: none;             
             margin-top: 0;
             thead {
                 tr {
@@ -81,12 +83,15 @@ main {
                     &:nth-child(even) td {
                         background-color: #fbfcfe;
                     }
-                    &.uk-active td {
-                        background-color: #fffae0;
-                    }
                     &:last-child td {
                         border-bottom-width: 0;
                     }
+                    &.uk-active td {
+                        background-color: #e3ffe0 !important;
+                    }
+                }
+                tr[selected="selected"] td {
+                    background-color: #fffae0;
                 }
             }
         }

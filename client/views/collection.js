@@ -1,25 +1,109 @@
 Template.Collection.created = function() {
     var self = this;
+    self.selectedSong = new ReactiveVar();
     self.search = new ReactiveVar();
+    self.searchQuery = function() {
+        var query = {};
+        var search = self.search.get();
+        if(typeof search == 'string') {
+            var regexp = new RegExp(search.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'i');
+            _.extend(query, { '$or': [{ 'artist': regexp }, { 'album': regexp }, { 'title': regexp }]});
+        }
+        return query;
+    }
+    self.load = function(song, resetCollection) {
+        AudioPlayer.load(song, function() {
+        }, function(error) {
+            UIkit.notify(error.message, 'warning');
+        });
+        if(resetCollection) {
+            self._collection = self.data.collection;
+        }
+    }
+    self.loadNext = function() {
+        var song = Session.get('currentSong');
+        if(!song) {
+        } else {
+            self.load(self.findNext(song, 1));
+        }
+    },
+    self.loadPrevious = function() {
+        var song = Session.get('currentSong');
+        if(!song) {
+        } else {
+            self.load(self.findNext(song, -1));
+        }
+    },
+    self.selectNext = function() {
+        var song = self.selectedSong.get();
+        if(!song) {
+        } else {
+            self.selectedSong.set(self.findNext(song, 1));
+        }
+    }
+    self.selectPrevious = function() {
+        var song = self.selectedSong.get();
+        if(!song) {
+        } else {
+            self.selectedSong.set(self.findNext(song, -1));
+        }
+    }
+    self.findNext = function(song, order, sort) {
+        if(!order) order = 1;
+        var query = {}, sort = _.extend({}, sort ? sort : self.data.sort);
+        var index = 0, lastIndex = _.size(sort) -1;
+        var field;
+        for(field in sort) {
+            var value = song[field];
+            var operator = sort[field] == order ? '$gt' : '$lt';
+            if(!value) {
+                continue; // TODO
+            } else if(++index < lastIndex) {
+                query[field] = value; 
+            } else {
+                query[field] = {};
+                query[field][operator] = value;
+            }
+        }
+        var collection = null;
+        if(song != self.selectedSong.get()) {
+            collection = self._collection;
+        } else {
+            collection = self.data.collection;
+            _.extend(query, self.searchQuery());
+        }
+        var nextSong = collection.findOne(query, { sort: _.object(_.map(self.data.sort, function(value, key) {
+            return [key, value * order];
+        })), fields: self.data.fields });
+        if(!nextSong) {
+            delete sort[field];
+            nextSong = self.findNext(song, order, sort);
+        }
+        return nextSong;
+    }
+    _.extend(AudioPlayer, { loadNext: self.loadNext, loadPrevious: self.loadPrevious });
+}
+
+Template.Collection.rendered = function() {
+    var self = this;
+    self.$('table').focus();
 }
 
 Template.Collection.helpers({
     'model': function() {
         var self = Template.instance();
-        var search = self.search.get();
-        var query = {};
-        if(typeof search == 'string') {
-            var regexp = new RegExp(search.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'i');
-            _.extend(query, { '$or': [{ 'artist': regexp }, { 'album': regexp }, { 'title': regexp }]});
-        }
-        return this.collection.find(query, { fields: this.fields, sort: this.sort });
+        return this.collection.find(self.searchQuery(), { fields: this.fields, sort: this.sort });
     },
     'rowAttributes': function() {
-        var currentSong = Session.get('currentSong');
-        if(!currentSong || currentSong._id != this._id) {
-        } else {
-            return { class: 'uk-active' };
+        var self = Template.instance();
+        var attributes = {};
+        if(_.isEqual(self.selectedSong.get(), this)) {
+            _.extend(attributes, { selected: 'selected' });
         }
+        if(_.isEqual(Session.get('currentSong'), this)) {
+            _.extend(attributes, { class: 'uk-active' });
+        }
+        return attributes;
     }
 });
 
@@ -44,12 +128,29 @@ Template.Collection.events({
         });
         self.$('th input[type="checkbox"]').prop('checked', allChecked);
     },
-    'click table tbody tr td:not(:first-child)': function(event, template) {
+    'click table tbody tr': function(event, template) {
         var self = template;
-        AudioPlayer.load(this, function() {
-        }, function(error) {
-            UIkit.notify(error.message, 'warning');
-        });
+        self.selectedSong.set(this);
+    },
+    'dblclick table tbody tr': function(event, template) {
+        var self = template;
+        self.load(this, true);
+    },
+    'keydown table tbody': function(event, template) {
+        var self = template;
+        switch(event.keyCode) {
+            case 13: // <return>
+                self.load(self.selectedSong.get(), true);
+                break;
+            case 38: // <up>
+                self.selectPrevious();
+                break;
+            case 40: // <down>
+                self.selectNext();
+                break;
+            default:
+                return;
+        }
+        return false;
     }
 })
-
