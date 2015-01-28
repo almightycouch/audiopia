@@ -20,7 +20,7 @@ IndexedDBStorage = function() {
         }
     }
     request.onupgradeneeded = function(event) {
-        var objectStore = request.result.createObjectStore('music');
+        request.result.createObjectStore('music');
     }
     request.onerror = function(event) {
         console.warn('IndexedDB error', request.errorCode);
@@ -69,20 +69,11 @@ IndexedDBStorage.prototype.writeFile = function(filePath, blob, successCallback,
 
 IndexedDBStorage.prototype.clear = function(successCallback, errorCallback) {
     var self = this;
-    var request = window.indexedDB.deleteDatabase('audiopia');
-    request.onsuccess = function(event) {
-        if(successCallback) {
-            successCallback();
-        }
-    };
-    request.onerror = function (event) {
-        if(errorCallback) {
-            errorCallback(new Error('Failed to delete database.'));
-        }
-    };
-    request.onblocked = function () {
-        if(errorCallback) {
-            errorCallback(new Error('Couldn\'t delete database due to the operation being blocked.'));
-        }
-    };
+    var transaction = self.db.transaction(['music'], 'readwrite');
+    transaction.onerror = function(event) {
+        errorCallback(new Error('Transaction error.'));
+    }
+    transaction.objectStore('music').clear().onsuccess = function(event) {
+        successCallback();
+    }
 }
