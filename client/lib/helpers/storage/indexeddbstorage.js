@@ -36,7 +36,31 @@ IndexedDBStorage.prototype.readFile = function(filePath, successCallback, errorC
     transaction.objectStore('music').get(filePath).onsuccess = function(event) {
         var blob = event.target.result;
         if(!(blob instanceof Blob)) {
-            errorCallback(new Error('Failed to decode data.'));
+            if(blob.indexOf('data:') != 0) {
+                errorCallback(new Error('Invalid format.'));
+            } else {
+                var b64ToUint6 = function(nChr) {
+                  return nChr > 64 && nChr < 91 ?  nChr - 65 : nChr > 96 && nChr < 123 ?  nChr - 71 : nChr > 47 && nChr < 58 ?  nChr + 4 : nChr === 43 ?  62 : nChr === 47 ?  63 : 0;
+                }
+                var base64DecToArr = function(sBase64, nBlocksSize) {
+                    var sB64Enc = sBase64.replace(/[^A-Za-z0-9\+\/]/g, ""), nInLen = sB64Enc.length,
+                    nOutLen = nBlocksSize ? Math.ceil((nInLen * 3 + 1 >> 2) / nBlocksSize) * nBlocksSize : nInLen * 3 + 1 >> 2, taBytes = new Uint8Array(nOutLen);
+                    for(var nMod3, nMod4, nUint24 = 0, nOutIdx = 0, nInIdx = 0; nInIdx < nInLen; nInIdx++) {
+                        nMod4 = nInIdx & 3;
+                        nUint24 |= b64ToUint6(sB64Enc.charCodeAt(nInIdx)) << 18 - 6 * nMod4;
+                        if(nMod4 === 3 || nInLen - nInIdx === 1) {
+                            for(nMod3 = 0; nMod3 < 3 && nOutIdx < nOutLen; nMod3++, nOutIdx++) {
+                                taBytes[nOutIdx] = nUint24 >>> (16 >>> nMod3 & 24) & 255;
+                            }
+                            nUint24 = 0;
+                        }
+                    }
+
+                    return taBytes;
+                }
+                var dataUrl = blob.split(',');
+                successCallback(new Blob([base64DecToArr(dataUrl[1]).buffer], { type: dataUrl[0].split(':')[1].split(';')[0] }));
+            }
         } else {
             successCallback(blob);
         }
@@ -54,7 +78,7 @@ IndexedDBStorage.prototype.readFileFromUrl = function(url, successCallback, erro
 
 IndexedDBStorage.prototype.writeFile = function(filePath, blob, successCallback, errorCallback) {
     var self = this;
-    try {
+    var storeCallback = function(blob, filePath) {
         var transaction = self.db.transaction(['music'], 'readwrite');
         transaction.onerror = function(event) {
             errorCallback(new Error('Transaction error.'));
@@ -62,8 +86,23 @@ IndexedDBStorage.prototype.writeFile = function(filePath, blob, successCallback,
         transaction.objectStore('music').put(blob, filePath).onsuccess = function(event) {
             successCallback(self._urlPrefix + escape(filePath));
         }
+    }
+
+    try {
+        storeCallback(blob, filePath);
     } catch(error) {
-        errorCallback(error);
+      if(error.name == 'DataCloneError') {
+          var reader = new FileReader();
+          reader.onload = function(event) {
+              storeCallback(event.target.result, filePath);
+          };
+          reader.onerror = function(event) {
+              errorCallback(event.target.error);
+          }
+          reader.readAsDataURL(blob);
+      } else {
+          errorCallback(error);
+      }
     }
 }
 
