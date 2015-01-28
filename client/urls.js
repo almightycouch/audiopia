@@ -13,9 +13,9 @@ Router.route('/music/', function() {
     var self = this;
     self.render('Collection', {
         data: {
-            model: self.params.hash == 'me' ? MusicManager.localCollection : MusicCollection,
+            fields: { track: true, title: true, album: true, artist: true, duration: true, url: true, owner: true },
             sort: { artist: 1, year: -1, album: 1, track: 1 },
-            fields: { track: true, title: true, album: true, artist: true, duration: true, url: true, owner: true }
+            collection: self.params.hash == 'me' ? MusicManager.localCollection : MusicCollection
         }
     });
 }, {

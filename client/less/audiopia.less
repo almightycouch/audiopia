@@ -61,14 +61,15 @@ main {
             tbody {
                 background-color: white;
                 tr {
-                    cursor: pointer;
                     td {
+                        cursor: pointer;
                         overflow: hidden;
                         color: #5b6173;
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         border-bottom: 1px solid #dde8ef;
                         &:first-child {
+                            cursor: initial;
                             .uk-text-center;
                         }
                         &:last-child {
@@ -77,8 +78,11 @@ main {
                             .uk-text-center;
                         }
                     }
-                    &:nth-child(even) {
+                    &:nth-child(even) td {
                         background-color: #fbfcfe;
+                    }
+                    &.uk-active td {
+                        background-color: #fffae0;
                     }
                     &:last-child td {
                         border-bottom-width: 0;

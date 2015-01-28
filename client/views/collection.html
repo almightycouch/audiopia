@@ -19,8 +19,8 @@
                 </tr>
             </thead>
             <tbody>
-            {{#each songs}}
-                <tr>
+            {{#each model}}
+            <tr {{rowAttributes}}>
                     <td><input type="checkbox"></td>
                     <td>{{title}}</td>
                     <td>{{artist}}</td>
