@@ -70,6 +70,8 @@ WebRTC = function(userId, options) {
             setTimeout(function() {
                 self.peer.reconnect();
             }, 5000);
+        } else if(error.type == 'browser-incompatible') {
+            alert(error.message);
         } else if(self._errorCallback) {
             self._errorCallback(error);
         } else {
@@ -101,7 +103,6 @@ WebRTC.prototype.connect = function(peerId, mediaId, successCallback, errorCallb
     }
     conn = self.peer.connect(peerId, { metadata: { id: mediaId } });
     if(!conn) {
-        errorCallback(new Error('Could not connect to peer ' + peerId));
     } else {
         conn.on('open', function() {
             conn.on('data', function(data) {
