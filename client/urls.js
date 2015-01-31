@@ -14,7 +14,7 @@ Router.route('/music/', function() {
     var hash = self.params.hash;
     self.render('Collection', {
         data: {
-            fields: { track: true, title: true, album: true, artist: true, duration: true, url: true, owner: true },
+            fields: { track: true, title: true, album: true, artist: true, duration: true, url: true, mime: true, owner: true },
             sort: { artist: 1, year: -1, album: 1, track: 1 },
             collection: hash == 'me' ? MusicManager.localCollection : MusicCollection,
         }

@@ -97,6 +97,9 @@ Template.Collection.helpers({
     'rowAttributes': function() {
         var self = Template.instance();
         var attributes = {};
+        if(!AudioPlayer.canPlay(this)) {
+            _.extend(attributes, { disabled: 'disabled' });
+        }
         if(_.isEqual(self.selectedSong.get(), this)) {
             _.extend(attributes, { selected: 'selected' });
         }

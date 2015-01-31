@@ -3,11 +3,17 @@ AudioPlayer = {
 
     initialize: function() {
         var self = this;
-        self.audioElement = new Audio();
-        self.audioElement.addEventListener('ended', function() {
-            Session.set('currentSong', null);
-        });
+        if(!self.audioElement) {
+            self.audioElement = new Audio();
+            self.audioElement.addEventListener('ended', function() {
+                Session.set('currentSong', null);
+            });
+        }
         return self.audioElement;
+    },
+    canPlay: function(song) {
+        var self = this;
+        return self.initialize().canPlayType(song.mime); // TODO
     },
     load: function(song, successCallback, errorCallback) {
         var self = this;

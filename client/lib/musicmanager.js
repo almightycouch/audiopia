@@ -31,7 +31,8 @@ MusicManager = {
                     'artist': result.artist[0],
                     'genre': result.genre[0],
                     'year': result.year,
-                    'duration': result.duration
+                    'duration': result.duration,
+                    'mime': file.type,
                 };
                 self.localStorage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(
                     _.extend(song, {
