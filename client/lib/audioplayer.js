@@ -13,7 +13,7 @@ AudioPlayer = {
     },
     canPlay: function(song) {
         var self = this;
-        return self.initialize().canPlayType(song.mime); // TODO
+        return self.audioElement.canPlayType(song.mime);
     },
     load: function(song, successCallback, errorCallback) {
         var self = this;

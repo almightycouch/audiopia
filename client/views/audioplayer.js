@@ -1,7 +1,7 @@
 Template.AudioPlayer.created = function() {
     var self = this;
     self._classPrefix = 'audioplayer-';
-    self.audioElement = AudioPlayer.initialize();
+    self.audioElement = AudioPlayer.audioElement;
     self.duration = new ReactiveVar(Infinity);
     self.currentTime = new ReactiveVar(0);
 }
