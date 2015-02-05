@@ -96,6 +96,17 @@ main {
                 tr[selected="selected"] td {
                     background-color: #fffae0;
                 }
+                tr[role="loading"] td:first-child {
+                    input[type="checkbox"] {
+                        display: none;
+                    }
+                    &:after {
+                        content: "\f110";
+                        font-family: 'FontAwesome';
+                        font-size: 13px;
+                        .uk-icon-spin;
+                    }
+                }
             }
         }
     }

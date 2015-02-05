@@ -1,6 +1,5 @@
 Template.Collection.created = function() {
     var self = this;
-    self.selectedSong = new ReactiveVar();
     self.search = new ReactiveVar();
     self.searchQuery = function() {
         var query = {};
@@ -11,8 +10,12 @@ Template.Collection.created = function() {
         }
         return query;
     }
+    self.selectedSong = new ReactiveVar();
+    self.loadingSong = new ReactiveVar();
     self.load = function(song, resetCollection) {
+        self.loadingSong.set(song);
         AudioPlayer.load(song, function() {
+            self.loadingSong.set(null);
         }, function(error) {
             UIkit.notify(error.message, 'warning');
         });
@@ -104,6 +107,10 @@ Template.Collection.helpers({
         if(_.isEqual(self.selectedSong.get(), this)) {
             _.extend(attributes, { selected: 'selected' });
         }
+        if(_.isEqual(self.loadingSong.get(), this)) {
+            _.extend(attributes, { role: 'loading' });
+        }
+
         if(_.isEqual(Session.get('currentSong'), this)) {
             _.extend(attributes, { class: 'uk-active' });
         }
