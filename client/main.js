@@ -1,5 +1,4 @@
 Meteor.startup(function () {
-    AudioPlayer.initialize();
     MusicManager.initialize();
     Tracker.autorun(function() {
         var userId = Meteor.userId();

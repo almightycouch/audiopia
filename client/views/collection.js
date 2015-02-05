@@ -23,6 +23,7 @@ Template.Collection.created = function() {
     self.loadNext = function() {
         var song = Session.get('currentSong');
         if(!song) {
+            console.warn('ooops');
         } else {
             self.load(self.findNext(song, 1));
         }
