@@ -1,21 +1,21 @@
 Template.Cover.created = function() {
     var self = this;
+    self.artist = new ReactiveVar();
+    self.album = new ReactiveVar();
     self.coverUrl = new ReactiveVar();
     Tracker.autorun(function() {
         var song = Session.get('currentSong');
         if(!song) {
             self.coverUrl.set('/static/img/cover.png');
-        } else if(song.artist != self._artist || song.album != self._album) {
+        } else if(song.artist != self.artist.get() || song.album != self.album.get()) {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function(event) {
                 try {
-                    self._artist = song.artist;
-                    self._album = song.album;
-                    self._url = JSON.parse(request.responseText).album.image[4]['#text'];
-                    self.coverUrl.set(self._url);
+                    self.artist.set(song.artist);
+                    self.album.set(song.album);
+                    self.coverUrl.set(JSON.parse(request.responseText).album.image[4]['#text']);
                 } catch(error) {
                     self.coverUrl.set('/static/img/cover.png');
-                    self._artist = self._album = self._url = undefined;
                 }
             }
             request.open('GET', 'http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={key}&artist={artist}&album={album}&format=json'.format({
@@ -25,12 +25,20 @@ Template.Cover.created = function() {
             }), true);
             request.send(null);
         } else {
-            self.coverUrl.set(self._url);
+            //self.coverUrl.set(self._url);
         }
     });
 }
 
 Template.Cover.helpers({
+    artist: function() {
+        var self = Template.instance();
+        return self.artist.get();
+    },
+    album: function() {
+        var self = Template.instance();
+        return self.album.get();
+    },
     coverUrl: function() {
         var self = Template.instance();
         return self.coverUrl.get();
