@@ -32,7 +32,7 @@ AudioPlayer = {
         } else {
             P2P.requestSong(song.owner, song._id, function(url) {
                 self.loadFromUrl(url, successCallback2, errorCallback2);
-            }, errorCallback2, { action: 'download' });
+            }, errorCallback2);
         }
     },
     loadFromUrl: function(url, successCallback, errorCallback) {

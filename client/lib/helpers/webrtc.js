@@ -13,20 +13,7 @@ WebRTC = function(userId, options) {
             sendError('Invalid request metadata.');
         } else {
             var successCallback = null;
-            if(options.action == 'download') {
-                successCallback = function(fileEntry) {
-                    var sendData = function(blob) {
-                        setTimeout(function() {
-                            conn.send({ data: blob, mime: song.mime });
-                        }, 500);
-                    };
-                    if(_.isFunction(fileEntry.file)) {
-                        fileEntry.file(sendData);
-                    } else {
-                        sendData(fileEntry);
-                    }
-                }
-            } else {
+            if(options.action == 'stream') {
                 successCallback = function(fileEntry) {
                     var reader = new FileReader();
                     reader.onloadend = (function(event) {
@@ -65,6 +52,19 @@ WebRTC = function(userId, options) {
                         fileEntry.file(function(file) {
                             reader.readAsArrayBuffer(file);
                         });
+                    }
+                }
+            } else {
+                successCallback = function(fileEntry) {
+                    var sendData = function(blob) {
+                        setTimeout(function() {
+                            conn.send({ data: blob, mime: song.mime });
+                        }, 500);
+                    };
+                    if(_.isFunction(fileEntry.file)) {
+                        fileEntry.file(sendData);
+                    } else {
+                        sendData(fileEntry);
                     }
                 }
             }
@@ -119,10 +119,8 @@ WebRTC.prototype.request = function(peerId, mediaId, successCallback, errorCallb
         self._successCallback = undefined;
         self._errorCallback = undefined;
     }
-    if(!options) {
-        options = {};
-    }
-    conn = self.peer.connect(peerId, { metadata: _.extend({ id: mediaId }, options), reliable: _.isEqual(options.action, 'download') });
+    options = _.extend({}, options);
+    conn = self.peer.connect(peerId, { metadata: _.extend({ id: mediaId }, options), reliable: !_.isEqual(options.action, 'stream') });
     if(!conn) {
     } else {
         conn.on('open', function() {
