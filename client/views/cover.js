@@ -13,10 +13,11 @@ Template.Cover.created = function() {
                 try {
                     self.artist.set(song.artist);
                     self.album.set(song.album);
-                    self.coverUrl.set(JSON.parse(request.responseText).album.image[4]['#text']);
+                    self.tmpUrl = JSON.parse(request.responseText).album.image[4]['#text'];
                 } catch(error) {
-                    self.coverUrl.set('/static/img/cover.png');
+                    self.tmpUrl ='/static/img/cover.png';
                 }
+                self.coverUrl.set(self.tmpUrl);
             }
             request.open('GET', 'http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={key}&artist={artist}&album={album}&format=json'.format({
                 artist: song.artist,
@@ -25,7 +26,9 @@ Template.Cover.created = function() {
             }), true);
             request.send(null);
         } else {
-            //self.coverUrl.set(self._url);
+            if(self.coverUrl.get() != self.tmpUrl) {
+                self.coverUrl.set(self.tmpUrl);
+            }
         }
     });
 }
