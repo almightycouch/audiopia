@@ -1,8 +1,8 @@
 P2P = {
     peer: null,
-    requestStream: function(peerId, songId, successCallback, errorCallback) {
+    requestSong: function(peerId, songId, successCallback, errorCallback, options) {
         var self = this;
-        var conn = self.peer.connect(peerId, songId, successCallback, errorCallback);
+        var conn = self.peer.request(peerId, songId, successCallback, errorCallback, options);
         if(!conn) {
         } else {
             conn.on('error', function(error) {
