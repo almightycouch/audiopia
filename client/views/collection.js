@@ -12,13 +12,13 @@ Template.Collection.created = function() {
     }
     self.selectedSong = new ReactiveVar();
     self.loadingSong = new ReactiveVar();
-    self.load = function(song, resetCollection) {
+    self.load = function(song, options, resetCollection) {
         self.loadingSong.set(song);
         AudioPlayer.load(song, function() {
             self.loadingSong.set(null);
         }, function(error) {
             UIkit.notify(error.message, 'warning');
-        });
+        }, options);
         if(resetCollection) {
             self._collection = self.data.collection;
         }
@@ -145,7 +145,7 @@ Template.Collection.events({
     },
     'dblclick table tbody tr': function(event, template) {
         var self = template;
-        self.load(this, true);
+        self.load(this, event.shiftKey ? { action: 'download' } : {}, true);
     },
     'keydown table tbody': function(event, template) {
         var self = template;

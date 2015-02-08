@@ -119,8 +119,10 @@ WebRTC.prototype.request = function(peerId, mediaId, successCallback, errorCallb
         self._successCallback = undefined;
         self._errorCallback = undefined;
     }
-    options = _.extend({}, options);
-    conn = self.peer.connect(peerId, { metadata: _.extend({ id: mediaId }, options), reliable: !_.isEqual(options.action, 'stream') });
+    if(!options || _.isEmpty(options)) {
+        options = { action: 'stream' };
+    }
+    conn = self.peer.connect(peerId, { metadata: _.extend(options, { id: mediaId }), reliable: !_.isEqual(options.action, 'stream') });
     if(!conn) {
     } else {
         conn.on('open', function() {
@@ -132,7 +134,6 @@ WebRTC.prototype.request = function(peerId, mediaId, successCallback, errorCallb
                     var blob = new Blob([data.data], {
                         type: data.mime
                     });
-                    console.log(blob);
                     self._successCallback(URL.createObjectURL(blob));
                 }
             });

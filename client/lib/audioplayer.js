@@ -5,7 +5,7 @@ AudioPlayer = {
         var self = this;
         return self.audioElement.canPlayType(song.mime);
     },
-    load: function(song, successCallback, errorCallback) {
+    load: function(song, successCallback, errorCallback, options) {
         var self = this;
         if(self.audioElement.currentSrc) {
             self.audioElement.pause();
@@ -32,7 +32,7 @@ AudioPlayer = {
         } else {
             P2P.requestSong(song.owner, song._id, function(url) {
                 self.loadFromUrl(url, successCallback2, errorCallback2);
-            }, errorCallback2);
+            }, errorCallback2, options);
         }
     },
     loadFromUrl: function(url, successCallback, errorCallback) {
