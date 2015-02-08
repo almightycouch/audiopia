@@ -126,9 +126,13 @@ WebRTC.prototype.request = function(peerId, mediaId, successCallback, errorCallb
     if(!conn) {
     } else {
         conn.on('open', function() {
-            conn.on('data', function(data) {
-                if(errorCallback && 'error' in data) {
-                    errorCallback(data.error);
+            conn.on('chunk', function(data, n, total) {
+                // TODO
+            }).on('data', function(data) {
+                if('error' in data) {
+                    if(errorCallback) {
+                        errorCallback(data.error);
+                    }
                     conn.close();
                 } else if('data' in data) {
                     var blob = new Blob([data.data], {
@@ -136,8 +140,7 @@ WebRTC.prototype.request = function(peerId, mediaId, successCallback, errorCallb
                     });
                     self._successCallback(URL.createObjectURL(blob));
                 }
-            });
-            conn.on('close', function() {
+            }).on('close', function() {
                 self._successCallback = undefined;
                 self._errorCallback = undefined;
             });

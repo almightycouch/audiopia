@@ -131,6 +131,7 @@ DataConnection.prototype._handleDataMessage = function(e) {
     chunkInfo.data[data.n] = data.data;
     chunkInfo.count += 1;
 
+    this.emit('chunk', data.data, data.n, data.total);
     if (chunkInfo.total === chunkInfo.count) {
       // Clean up before making the recursive call to `_handleDataMessage`.
       delete this._chunkedData[id];
