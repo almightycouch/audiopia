@@ -20,5 +20,9 @@ Router.route('/music/', function() {
         }
     });
 }, {
-    name: 'music'
+    name: 'music',
+    onBeforeAction: function () {
+        Session.set('search', null);
+        this.next();
+    }
 });

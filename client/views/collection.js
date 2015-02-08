@@ -1,21 +1,11 @@
 Template.Collection.created = function() {
     var self = this;
-    self.search = new ReactiveVar();
-    self.searchQuery = function() {
-        var query = {};
-        var search = self.search.get();
-        if(typeof search == 'string') {
-            var regexp = new RegExp(search.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'i');
-            _.extend(query, { '$or': [{ 'artist': regexp }, { 'album': regexp }, { 'title': regexp }]});
-        }
-        return query;
-    }
-    self.selectedSong = new ReactiveVar();
-    self.loadingSong = new ReactiveVar();
+    self._selected = new ReactiveVar();
+    self._loading = new ReactiveVar();
     self.load = function(song, options, resetCollection) {
-        self.loadingSong.set(song);
+        self._loading.set(song);
         AudioPlayer.load(song, function() {
-            self.loadingSong.set(null);
+            self._loading.set(null);
         }, function(error) {
             UIkit.notify(error.message, 'warning');
         }, options);
@@ -26,7 +16,6 @@ Template.Collection.created = function() {
     self.loadNext = function() {
         var song = Session.get('currentSong');
         if(!song) {
-            console.warn('ooops');
         } else {
             self.load(self.findNext(song, 1));
         }
@@ -39,17 +28,17 @@ Template.Collection.created = function() {
         }
     },
     self.selectNext = function() {
-        var song = self.selectedSong.get();
+        var song = self._selected.get();
         if(!song) {
         } else {
-            self.selectedSong.set(self.findNext(song, 1));
+            self._selected.set(self.findNext(song, 1));
         }
     }
     self.selectPrevious = function() {
-        var song = self.selectedSong.get();
+        var song = self._selected.get();
         if(!song) {
         } else {
-            self.selectedSong.set(self.findNext(song, -1));
+            self._selected.set(self.findNext(song, -1));
         }
     }
     self.findNext = function(song, order, sort) {
@@ -70,7 +59,7 @@ Template.Collection.created = function() {
             }
         }
         var collection = null;
-        if(song != self.selectedSong.get()) {
+        if(song != self._selected.get()) {
             collection = self._collection;
         } else {
             collection = self.data.collection;
@@ -84,6 +73,15 @@ Template.Collection.created = function() {
             nextSong = self.findNext(song, order, sort);
         }
         return nextSong;
+    }
+    self.searchQuery = function() {
+        var query = {};
+        var search = Session.get('search');
+        if(typeof search == 'string') {
+            var regexp = new RegExp(search.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'i');
+            _.extend(query, { '$or': [{ 'artist': regexp }, { 'album': regexp }, { 'title': regexp }]});
+        }
+        return query;
     }
     _.extend(AudioPlayer, { loadNext: self.loadNext, loadPrevious: self.loadPrevious });
 }
@@ -104,10 +102,10 @@ Template.Collection.helpers({
         if(!AudioPlayer.canPlay(this)) {
             _.extend(attributes, { disabled: 'disabled' });
         }
-        if(_.isEqual(self.selectedSong.get(), this)) {
+        if(_.isEqual(self._selected.get(), this)) {
             _.extend(attributes, { selected: 'selected' });
         }
-        if(_.isEqual(self.loadingSong.get(), this)) {
+        if(_.isEqual(self._loading.get(), this)) {
             _.extend(attributes, { role: 'loading' });
         }
 
@@ -115,13 +113,16 @@ Template.Collection.helpers({
             _.extend(attributes, { class: 'uk-active' });
         }
         return attributes;
+    },
+    'search': function() {
+        return Session.get('search');
     }
 });
 
 Template.Collection.events({
-    'input aside input[role="search"]': function(event, template) {
+    'input aside input[type="search"]': function(event, template) {
         var self = template;
-        self.search.set(event.target.value);
+        Session.set('search', event.target.value);
     },
     'change table thead tr th input[type="checkbox"]': function(event, template) {
         var self = template;
@@ -141,7 +142,7 @@ Template.Collection.events({
     },
     'click table tbody tr': function(event, template) {
         var self = template;
-        self.selectedSong.set(this);
+        self._selected.set(this);
     },
     'dblclick table tbody tr': function(event, template) {
         var self = template;
@@ -151,7 +152,7 @@ Template.Collection.events({
         var self = template;
         switch(event.keyCode) {
             case 13: // <return>
-                self.load(self.selectedSong.get(), true);
+                self.load(self._selected.get(), true);
                 break;
             case 38: // <up>
                 self.selectPrevious();
