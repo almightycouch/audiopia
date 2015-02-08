@@ -11,9 +11,7 @@ Template.Cover.created = function() {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function(event) {
                 try {
-                    self.artist.set(song.artist);
-                    self.album.set(song.album);
-                    self.tmpUrl = JSON.parse(request.responseText).album.image[4]['#text'];
+                    self.tmpUrl = JSON.parse(this.responseText).album.image[4]['#text'];
                 } catch(error) {
                     self.tmpUrl ='/static/img/cover.png';
                 }
@@ -25,6 +23,8 @@ Template.Cover.created = function() {
                 key: 'd3e32fae7e888bac6ba385afaef043bf',
             }), true);
             request.send(null);
+            self.artist.set(song.artist);
+            self.album.set(song.album);
         } else {
             if(self.coverUrl.get() != self.tmpUrl) {
                 self.coverUrl.set(self.tmpUrl);
