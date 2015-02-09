@@ -20,13 +20,16 @@
             </thead>
             <tbody tabindex="0">
             {{#each model}}
-            <tr {{rowAttributes}}>
+                <tr {{rowAttributes}}>
                     <td><input type="checkbox"></td>
                     <td>{{title}}</td>
                     <td>{{artist}}</td>
                     <td class="uk-hidden-small">{{album}}</td>
                     <td>{{formatSecs duration}}</td>
                 </tr>
+                {{#if progress}}
+                    <progress {{progress}}></progress>
+                {{/if}}
             {{/each}}
             </tbody>
         </table>

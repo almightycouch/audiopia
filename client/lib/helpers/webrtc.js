@@ -127,7 +127,9 @@ WebRTC.prototype.request = function(peerId, mediaId, successCallback, errorCallb
     } else {
         conn.on('open', function() {
             conn.on('chunk', function(data, n, total) {
-                // TODO
+                if('progress' in options) {
+                    options.progress(data, n, total);
+                }
             }).on('data', function(data) {
                 if('error' in data) {
                     if(errorCallback) {

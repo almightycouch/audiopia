@@ -2,16 +2,27 @@ Template.Collection.created = function() {
     var self = this;
     self._selected = new ReactiveVar();
     self._loading = new ReactiveVar();
-    self.load = function(song, options, resetCollection) {
+    self._progress = new ReactiveVar();
+    self.load = function(song, action) {
+        options = {};
+        if(!_.isEqual(action, undefined)) {
+            self._collection = self.data.collection;
+            if(_.isEqual(action, true)) {
+                _.extend(options, {
+                    action: 'download',
+                    progress: function(data, n, total) {
+                        self._progress.set({ value: n, max: total });
+                    }
+                });
+            }
+        }
         self._loading.set(song);
         AudioPlayer.load(song, function() {
             self._loading.set(null);
+            self._progress.set(null);
         }, function(error) {
             UIkit.notify(error.message, 'warning');
         }, options);
-        if(resetCollection) {
-            self._collection = self.data.collection;
-        }
     }
     self.loadNext = function() {
         var song = Session.get('currentSong');
@@ -108,13 +119,21 @@ Template.Collection.helpers({
         if(_.isEqual(self._loading.get(), this)) {
             _.extend(attributes, { role: 'loading' });
         }
-
         if(_.isEqual(Session.get('currentSong'), this)) {
             _.extend(attributes, { class: 'uk-active' });
         }
         return attributes;
     },
+    'progress': function() {
+        var self = Template.instance();
+        var progress = self._progress.get();
+        if(_.isEqual(self._loading.get(), this) && progress) {
+            return progress;
+        }
+
+    },
     'search': function() {
+        var self = Template.instance();
         return Session.get('search');
     }
 });
@@ -146,13 +165,13 @@ Template.Collection.events({
     },
     'dblclick table tbody tr': function(event, template) {
         var self = template;
-        self.load(this, event.shiftKey ? { action: 'download' } : {}, true);
+        self.load(this, event.shiftKey);
     },
     'keydown table tbody': function(event, template) {
         var self = template;
         switch(event.keyCode) {
             case 13: // <return>
-                self.load(self._selected.get(), true);
+                self.load(self._selected.get(), event.shiftKey);
                 break;
             case 38: // <up>
                 self.selectPrevious();
