@@ -1,25 +1,15 @@
 AudioPlayer = {
-    audioElement: null,
+    audioElement: new Audio(),
 
-    initialize: function() {
-        var self = this;
-        if(!self.audioElement) {
-            self.audioElement = new Audio();
-            self.audioElement.addEventListener('ended', function() {
-                Session.set('currentSong', null);
-            });
-        }
-        return self.audioElement;
-    },
     canPlay: function(song) {
         var self = this;
         return self.audioElement.canPlayType(song.mime);
     },
-    load: function(song, successCallback, errorCallback) {
+    load: function(song, successCallback, errorCallback, options) {
         var self = this;
         if(self.audioElement.currentSrc) {
+            self.audioElement.pause();
             Session.set('currentSong', undefined);
-            self.audioElement.src = null;
         }
         var successCallback2 = function() {
             Session.set('currentSong', song);
@@ -40,9 +30,9 @@ AudioPlayer = {
         } else if(song.owner == Meteor.userId()) {
             self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url, successCallback2, errorCallback2);
         } else {
-            P2P.requestStream(song.owner, song._id, function(url) {
+            P2P.requestSong(song.owner, song._id, function(url) {
                 self.loadFromUrl(url, successCallback2, errorCallback2);
-            }, errorCallback2);
+            }, errorCallback2, options);
         }
     },
     loadFromUrl: function(url, successCallback, errorCallback) {
@@ -53,7 +43,6 @@ AudioPlayer = {
             if(successCallback) {
                 successCallback();
             }
-            self.audioElement.play();
         }
         if(url.indexOf('indexeddb:') != 0) {
             loadCallback(url);

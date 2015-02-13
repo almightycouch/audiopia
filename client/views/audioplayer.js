@@ -29,8 +29,12 @@ Template.AudioPlayer.rendered = function() {
     }
     self.audioElement.addEventListener('canplay', function(event) {
         $(self.firstNode).removeClass(self._classPrefix + 'disabled');
+        this.play();
     });
-    self.audioElement.addEventListener('ended', clearCallback);
+    self.audioElement.addEventListener('ended', function(event) {
+        clearCallback(event);
+        AudioPlayer.loadNext();
+    });
     self.audioElement.addEventListener('emptied', clearCallback);
     self.audioElement.addEventListener('play', function(event) {
         $(self.firstNode).addClass(self._classPrefix + 'playing');
@@ -57,6 +61,14 @@ Template.AudioPlayer.rendered = function() {
         if(this.seekable.length) {
             updateCallback(this.currentTime);
         }
+    });
+    self.audioElement.addEventListener('error', function(event) {
+        var errorMessage = new String();
+        switch(this.error.code) {
+            default:
+                errorMessage = 'Failed to load song.';
+        }
+        UIkit.notify(errorMessage, 'warning');
     });
 }
 

@@ -63,15 +63,17 @@ MusicManager = {
     },
     pushSong: function(song, successCallback, errorCallback) {
         var self = this;
-        Meteor.call('pushSong', song, function(error, songId) {
-            if(!error) {
-                if(successCallback) {
-                    successCallback(_.extend(song, { '_id': songId }));
+        if(window.chrome && window.navigator.vendor == 'Google Inc.' && parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) >= 30) {
+            Meteor.call('pushSong', song, function(error, songId) {
+                if(!error) {
+                    if(successCallback) {
+                        successCallback(_.extend(song, { '_id': songId }));
+                    }
+                } else if(errorCallback) {
+                    errorCallback(error);
                 }
-            } else if(errorCallback) {
-                errorCallback(error);
-            }
-        });
+            });
+        }
     },
     synchronize: function(errorCallback) {
         var self = this;
