@@ -9,12 +9,18 @@
 @base-body-font-size: 11px;
 @base-body-font-weight: normal;
 
+@navbar-background: #2b2b2b;
+
 .hook-base-body() {
     background: #f4f4f4 url("@{image-path}/body-bg.png");
     background-size: 63px;
     letter-spacing: 0.8px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+.hook-navbar() {
+    background-image: none;
 }
 
 // @import "uikit/components/accordion.import.less";

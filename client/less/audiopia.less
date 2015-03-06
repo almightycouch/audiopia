@@ -1,13 +1,38 @@
 @import "uikit.import.less";
 
+header {
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+    nav {
+        height: 50px;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.8);
+    }
+}
+
 main {
-    margin: 0 0 30px 240px;
+    margin: 50px 0 30px 240px;
     section.collection {
         aside {
             height: 30px;
             padding: 20px;
             background-image: linear-gradient(#f0f3f9, #e8ecf5);
             border-bottom: 1px solid #ced9e3;
+            form {
+                position: fixed;
+                z-index: 2;
+                top: 0;
+                right: 0;
+                padding: 12px 8px;
+                input[type="search"] {
+                    width: 200px;
+                    border-radius: 20px;
+                    &:focus {
+                        background-color: white;
+                    }
+                }
+            }
         }
         table {
             position: relative;
@@ -120,7 +145,9 @@ main {
 
 nav[role="menu"] {
     position: fixed;
-    top: 0; left: 0; bottom: 0;
+    top: 52px; left: 0; bottom: 0;
+    clip: rect(0, 250px, auto, auto);
+    z-index: 3;
     width: 240px;
     margin-bottom: 29px;
     font-family: @base-heading-font-family;
@@ -131,6 +158,7 @@ nav[role="menu"] {
     -moz-osx-font-smoothing: initial;
     background: #2b2b2b url("@{image-path}/sidebar-bg.png");
     background-size: 35px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.8);
     ul.uk-nav[role="navigation"] li {
         border-top: 1px solid #313131;
         border-bottom: 1px solid #1f1f1f;
@@ -144,11 +172,11 @@ nav[role="menu"] {
                 width: 18px;
                 font-size: 1.2em;
             }
-
             span.uk-badge {
                 min-width: 30px;
                 float: right;
                 margin-top: 5px;
+                padding-bottom: 1px;
                 font-family: @base-code-font-family;
                 font-weight: 400;
                 font-size: 10px;
@@ -185,10 +213,10 @@ nav[role="menu"] {
             padding: 5px 20px;
             line-height: 16px;
             font-family: @base-body-font-family;
-            background-color: rgba(0,0,0,0.6);
+            font-size: 9px;
+            background-color: rgba(0,0,0,0.65);
             strong {
                 font-weight: 600;
-                letter-spacing: 0.8;
             }
         }
     }
