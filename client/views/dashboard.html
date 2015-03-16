@@ -1,9 +1,11 @@
 <template name="Dashboard">
-    <div class="uk-text-center uk-margin-large-top">
-        <div class="uk-form-file">
-            <button class="uk-button uk-button-primary">Add Music</button>
-            <input type="file" multiple webkitdirectory>
-        </div>
-        <button class="uk-button">Remove All</button>
-    </div>
+    <section class="dashboard">
+        <aside>
+            <div class="uk-form-file">
+                <button class="uk-button uk-button-primary">Add Music</button>
+                <input type="file" multiple accept="audio/*" webkitdirectory>
+            </div>
+            <button class="uk-button">Remove All</button>
+        </aside>
+    </section>
 </template>
