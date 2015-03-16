@@ -171,7 +171,9 @@ Template.Collection.events({
     },
     'dblclick table tbody tr': function(event, template) {
         var self = template;
-        self.load(this, event.shiftKey);
+        if(!self.$(event.target).is('input[type="checkbox"]')) {
+            self.load(this, event.shiftKey);
+        }
     },
     'keydown table tbody': function(event, template) {
         var self = template;
