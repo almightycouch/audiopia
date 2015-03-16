@@ -13,6 +13,9 @@ Template._layout.rendered = function() {
                     return;
             }
             return false;
+        } else if(event.metaKey && event.keyCode == 70) {
+            $('input[type="search"]').focus();
+            return false;
         }
     });
 }

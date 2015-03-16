@@ -142,9 +142,12 @@ Template.Collection.events({
     'submit form': function(event, template) {
         return false;
     },
-    'input aside input[type="search"]': function(event, template) {
+    'input input[type="search"]': function(event, template) {
         var self = template;
         Session.set('search', event.target.value);
+    },
+    'focus input[type="search"]': function(event, template) {
+        self.$(event.target).select();
     },
     'change table thead tr th input[type="checkbox"]': function(event, template) {
         var self = template;
