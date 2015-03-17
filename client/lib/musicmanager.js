@@ -18,47 +18,56 @@ MusicManager = {
             self.localCollection = new Ground.Collection('music', { connection: null });
         }
     },
-    addSongs: function(files, errorCallback) {
+    addSongs: function(files, successCallback, errorCallback) {
         var self = this;
+        Session.set('currentImport', {});
         async.eachSeries(files, function(file, asyncCallback) {
-            var path = file.webkitRelativePath || file.name;
-            var meta = musicmetadata(file, { duration: true });
-            meta.on('metadata', function(result) {
-                var song = {
-                    'track': result.track.no,
-                    'title': result.title,
-                    'album': result.album,
-                    'artist': result.artist[0],
-                    'genre': result.genre[0],
-                    'year': result.year,
-                    'duration': result.duration,
-                    'mime': file.type,
-                };
-                self.localStorage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(
-                    _.extend(song, {
-                        extension: path.substr(path.lastIndexOf('.') + 1)
-                    })), file, function(url) {
-                    var id = self.localCollection.insert(_.extend(song, {
-                        url: url
-                    }));
-                    self.pushSong(_.extend(song, { _id: id }));
-                    asyncCallback();
-                },  function(error) {
-                    if(error.name != 'InvalidModificationError') {
-                        asyncCallback(error);
-                    } else {
+            var currentImport = Session.get('currentImport');
+            if(!currentImport.abort) {
+                var path = file.webkitRelativePath || file.name;
+                var meta = musicmetadata(file, { duration: true });
+                meta.on('metadata', function(result) {
+                    var song = {
+                        'track': result.track.no,
+                        'title': result.title,
+                        'album': result.album,
+                        'artist': result.artist[0],
+                        'genre': result.genre[0],
+                        'year': result.year,
+                        'duration': result.duration,
+                        'mime': file.type,
+                    };
+                    self.localStorage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(
+                        _.extend(song, {
+                            extension: path.substr(path.lastIndexOf('.') + 1)
+                        })), file, function(url) {
+                        var id = self.localCollection.insert(_.extend(song, {
+                            url: url
+                        }));
+                        self.pushSong(_.extend(song, { _id: id }));
+                        asyncCallback();
+                    },  function(error) {
+                        if(error.name != 'InvalidModificationError') {
+                            asyncCallback(error);
+                        } else {
+                            asyncCallback();
+                        }
+                    });
+                }).on('done', function(error) {
+                    if(error) {
                         asyncCallback();
                     }
                 });
-            }).on('done', function(error) {
-                if(error) {
-                    asyncCallback();
-                }
-            });
+            } else {
+                asyncCallback(new Error('Operation aborted.'));
+            }
         }, function(error) {
             if(error) {
                 errorCallback(error);
+            } else {
+                successCallback();
             }
+            Session.set('currentImport');
         });
     },
     pushSong: function(song, successCallback, errorCallback) {
