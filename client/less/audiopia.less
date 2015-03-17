@@ -8,6 +8,16 @@ header {
     nav {
         height: 50px;
         box-shadow: 2px 0 10px rgba(0,0,0,0.8);
+        a.uk-navbar-brand {
+            width: 240px;
+            padding: 10px;
+            color: rgba(255,255,255,0.25);
+            font-size: 11px;
+            font-weight: 300;
+            line-height: 30px;
+            text-align: center;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
+        }
     }
 }
 
@@ -22,6 +32,7 @@ main {
         }
         &.dashboard {
             aside {
+                .uk-text-right;
             }
         }
         &.collection {
@@ -220,7 +231,7 @@ nav[role="menu"] {
             line-height: 16px;
             font-family: @base-body-font-family;
             font-size: 9px;
-            background-color: rgba(0,0,0,0.65);
+            background-color: rgba(0,0,0,0.8);
             strong {
                 font-weight: 600;
             }
