@@ -3,6 +3,12 @@ Router.configure({
 });
 
 Router.route('/', function() {
+    Router.go('music');
+}, {
+    name: 'home'
+});
+
+Router.route('/dashboard', function() {
     var self = this;
     self.render('Dashboard');
 }, {
