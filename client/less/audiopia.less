@@ -29,6 +29,20 @@ main {
             padding: 20px;
             background-image: linear-gradient(#f0f3f9, #e8ecf5);
             border-bottom: 1px solid #ced9e3;
+            .fixed {
+                position: fixed;
+                z-index: 2;
+                top: 0;
+                right: 0;
+                padding: 12px 8px;
+                input[type="search"] {
+                    width: 200px;
+                    border-radius: 20px;
+                    &:focus {
+                        background-color: white;
+                    }
+                }
+            }
         }
         &.dashboard {
             aside {
@@ -52,20 +66,6 @@ main {
             }
         }
         &.collection {
-            form {
-                position: fixed;
-                z-index: 2;
-                top: 0;
-                right: 0;
-                padding: 12px 8px;
-                input[type="search"] {
-                    width: 200px;
-                    border-radius: 20px;
-                    &:focus {
-                        background-color: white;
-                    }
-                }
-            }
             table {
                 position: relative;
                 display: table;
