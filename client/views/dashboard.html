@@ -1,6 +1,9 @@
 <template name="Dashboard">
     <section class="dashboard">
         <aside>
+            <ul class="uk-tab uk-float-left" data-uk-tab="{connect:'.uk-switcher'}">
+                <li class="uk-active"><a href="#">Overview</a></li>
+            </ul>
             <div class="uk-text-right">
                 <div class="uk-button-group">
                 {{#unless currentImport }}
@@ -16,5 +19,8 @@
                 </div>
             </div>
         </aside>
+        <ul class="uk-switcher">
+            <li>Not implemented yet.</li>
+        </ul>
     </section>
 </template>

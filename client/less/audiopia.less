@@ -32,6 +32,23 @@ main {
         }
         &.dashboard {
             aside {
+                ul.uk-tab {
+                    margin-top: 14px;
+                    li {
+                        &.uk-active a {
+                            border-color: #ced9e3;
+                        }
+                        &:not(.uk-active) a:hover {
+                            background: transparent;
+                            border-color: transparent;
+                        }
+                    }
+                }
+            }
+            ul.uk-switcher {
+                padding: 24px 32px;
+                background-color: white;
+                border-bottom: 1px solid #ced9e3;
             }
         }
         &.collection {
@@ -190,7 +207,7 @@ main {
 nav[role="menu"] {
     position: fixed;
     top: 52px; left: 0; bottom: 0;
-    clip: rect(0, 250px, auto, auto);
+    clip: rect(0, 260px, auto, auto);
     z-index: 3;
     width: 240px;
     margin-bottom: 29px;
