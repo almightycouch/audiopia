@@ -25,7 +25,7 @@ AudioPlayer = {
                 errorCallback(error);
             }
         };
-        if(song.owner == Meteo.userId()) {
+        if(song.owner == Meteor.userId()) {
             self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url, successCallback2, errorCallback2);
         } else if(song.url) {
             self.loadFromUrl(song.url, successCallback2, errorCallback2);
