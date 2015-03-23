@@ -3,6 +3,7 @@ MusicManager = {
     sharedCollection: null,
     localStorage: null,
     localCollection: null,
+    downloads: null,
 
     initialize: function() {
         var self = this;
@@ -31,6 +32,9 @@ MusicManager = {
                 self.synchronize(function(error) {
                     console.warn(error);
                 });
+                self.downloads = async.queue(function(song, asyncCallback) {
+                    self.downloadSong(song, asyncCallback, asyncCallback);
+                }, 1);
             }
         });
     },
@@ -122,7 +126,7 @@ MusicManager = {
             request.responseType = 'blob';
             request.onerror = errorCallback;
             request.onload = function(event) {
-                self.saveSong(song, new Blob([this.response], { type: song.mime }), successCallback, errorCallback);
+                self.saveSong(_.omit(song, 'owner'), new Blob([this.response], { type: song.mime }), successCallback, errorCallback);
             }
             request.send();
         }, errorCallback, { action: 'download' });
