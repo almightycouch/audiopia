@@ -78,9 +78,13 @@ MusicManager = {
             }
         }, function(error) {
             if(error) {
-                errorCallback(error);
+                if(errorCallback) {
+                    errorCallback(error);
+                }
             } else {
-                successCallback();
+                if(successCallback) {
+                    successCallback();
+                }
             }
             Session.set('currentImport');
         });
@@ -115,7 +119,9 @@ MusicManager = {
             var id = self.localCollection.insert(_.extend(song, {
                 url: url
             }));
-            successCallback(id);
+            if(successCallback) {
+                successCallback(id);
+            }
         }, errorCallback);
     },
     downloadSong: function(song, successCallback, errorCallback) {
@@ -143,9 +149,11 @@ MusicManager = {
             if(!error) {
                 self.localCollection.remove({});
                 self.localStorage.clear(function() {
-                    successCallback();
+                    if(successCallback) {
+                        successCallback();
+                    }
                 }, errorCallback);
-            } else {
+            } else if(errorCallback) {
                 errorCallback(error);
             }
         });
