@@ -6,6 +6,9 @@ Template.Dashboard.rendered = function() {
             {
                 fillColor: 'rgba(220,220,220,0.2)',
                 strokeColor: 'rgba(220,220,220,1)',
+            }, {
+                fillColor: 'rgba(151,187,205,0.2)',
+                strokeColor: 'rgba(151,187,205,1)',
             }
         ]
     }, {
@@ -18,16 +21,19 @@ Template.Dashboard.rendered = function() {
     });
 
     Tracker.autorun(function(event) {
+        var limit = 48;
         var sortOrder = { sort: { timestamp: -1 } }; 
         var increment = function(stat) {
             var timestamp = new Date(stat.timestamp);
-            self.chart.addData([stat.total], ('0' + timestamp.getHours()).slice(-2) + ':' + ('0' + timestamp.getMinutes()).slice(-2));
+            self.chart.addData([stat.songs, stat.users], ('0' + timestamp.getHours()).slice(-2) + ':' + ('0' + timestamp.getMinutes()).slice(-2));
         }
         if(!event.firstRun) {
-            self.chart.removeData();
+            if(self.chart.datasets[0].points.length > limit) {
+                self.chart.removeData();
+            }
             increment(Stats.findOne({}, sortOrder));
         } else {
-            _.each(Stats.find({}, _.extend({ limit: 24 }, sortOrder)).fetch().reverse(), increment);
+            _.each(Stats.find({}, _.extend({ limit: limit }, sortOrder)).fetch().reverse(), increment);
         }
     });
 }
