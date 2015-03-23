@@ -6,22 +6,21 @@ MusicManager = {
 
     initialize: function() {
         var self = this;
+        var fallback = function(error) {
+            self.clear();
+            self.localStorage = new TemporaryStorage();
+        }
         try {
-            self.localStorage = new FilesystemStorage();
+            self.localStorage = new FilesystemStorage(fallback);
         } catch(error) {
             try {
                 self.localStorage = new IndexedDBStorage();
             } catch(error) {
-                self.localStorage = new TemporaryStorage();
-                self.localCollection = new Mongo.Collection(null);
+                fallback(error);
             }
         }
-        if(!self.sharedCollection) {
-            self.sharedCollection = Music;
-        }
-        if(!self.localCollection) {
-            self.localCollection = new Ground.Collection('music', { connection: null });
-        }
+        self.sharedCollection = Music;
+        self.localCollection = new Ground.Collection('music', { connection: null });
         Tracker.autorun(function() {
             var userId = Meteor.userId();
             if(!userId) {

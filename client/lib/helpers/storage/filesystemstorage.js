@@ -1,12 +1,13 @@
-FilesystemStorage = function() {
+FilesystemStorage = function(errorCallback) {
     var self = this;
     if(!window.webkitRequestFileSystem) {
         throw new Error('Your browser does not support the Filesystem API.');
     }
+
     navigator.webkitPersistentStorage.requestQuota(2*1024*1024*1024 /* 2GB */, function(grantedBytes) {
         window.webkitRequestFileSystem(window.PERSISTENT, grantedBytes, function(filesystem) {
             self.root = filesystem.root;
-        });
+        }, errorCallback);
     });
 }
 
