@@ -16,5 +16,5 @@ Meteor.startup(function () {
 
     Meteor.setInterval(function() {
         Stats.insert({ 'timestamp': new Date().valueOf(), 'songs': Music.find().count(), 'users': Meteor.users.find({ 'status.online': true }).count() });
-    }, 30 * 60 * 1000);
+    }, 15 * 60 * 1000);
 });

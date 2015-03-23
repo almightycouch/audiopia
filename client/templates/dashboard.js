@@ -21,7 +21,7 @@ Template.Dashboard.rendered = function() {
     });
 
     Tracker.autorun(function(event) {
-        var limit = 48;
+        var limit = 20;
         var sortOrder = { sort: { timestamp: -1 } }; 
         var increment = function(stat) {
             var timestamp = new Date(stat.timestamp);
