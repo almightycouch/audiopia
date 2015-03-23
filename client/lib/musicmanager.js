@@ -22,7 +22,6 @@ MusicManager = {
         if(!self.localCollection) {
             self.localCollection = new Ground.Collection('music', { connection: null });
         }
-
         Tracker.autorun(function() {
             var userId = Meteor.userId();
             if(!userId) {
@@ -35,9 +34,8 @@ MusicManager = {
                 });
             }
         });
-
     },
-    addSongs: function(files, successCallback, errorCallback) {
+    importSongs: function(files, successCallback, errorCallback) {
         var self = this;
         Session.set('currentImport', {});
         async.eachSeries(files, function(file, asyncCallback) {
@@ -55,17 +53,12 @@ MusicManager = {
                         'year': result.year,
                         'duration': result.duration,
                         'mime': file.type,
+                        'extension': path.substr(path.lastIndexOf('.') + 1)
                     };
-                    self.localStorage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(
-                        _.extend(song, {
-                            extension: path.substr(path.lastIndexOf('.') + 1)
-                        })), file, function(url) {
-                        var id = self.localCollection.insert(_.extend(song, {
-                            url: url
-                        }));
+                    self.saveSong(song, file, function(id) {
                         self.pushSong(_.extend(song, { _id: id }));
                         asyncCallback();
-                    },  function(error) {
+                    }, function(error) {
                         if(error.name != 'InvalidModificationError') {
                             asyncCallback(error);
                         } else {
@@ -112,6 +105,28 @@ MusicManager = {
                 errorCallback(error);
             });
         }
+    },
+    saveSong: function(song, file, successCallback,  errorCallback) {
+        var self = this;
+        self.localStorage.writeFile('{artist}/{album}/{track} {title}.{extension}'.format(song), file, function(url) {
+            var id = self.localCollection.insert(_.extend(song, {
+                url: url
+            }));
+            successCallback(id);
+        }, errorCallback);
+    },
+    downloadSong: function(song, successCallback, errorCallback) {
+        var self = this;
+        self.requestSong(song.owner, song._id, function(url) {
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true); 
+            request.responseType = 'blob';
+            request.onerror = errorCallback;
+            request.onload = function(event) {
+                self.saveSong(song, new Blob([this.response], { type: song.mime }), successCallback, errorCallback);
+            }
+            request.send();
+        }, errorCallback, { action: 'download' });
     },
     synchronize: function(errorCallback) {
         var self = this;

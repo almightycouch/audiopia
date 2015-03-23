@@ -24,8 +24,10 @@ Template.Dashboard.rendered = function() {
         var limit = 20;
         var sortOrder = { sort: { timestamp: -1 } }; 
         var increment = function(stat) {
-            var timestamp = new Date(stat.timestamp);
-            self.chart.addData([stat.songs, stat.users], ('0' + timestamp.getHours()).slice(-2) + ':' + ('0' + timestamp.getMinutes()).slice(-2));
+            if(stat) {
+                var timestamp = new Date(stat.timestamp);
+                self.chart.addData([stat.songs, stat.users], ('0' + timestamp.getHours()).slice(-2) + ':' + ('0' + timestamp.getMinutes()).slice(-2));
+            }
         }
         if(!event.firstRun) {
             if(self.chart.datasets[0].points.length > limit) {
@@ -52,7 +54,7 @@ Template.Dashboard.helpers({
 Template.Dashboard.events({
     'change input[type=file]': function(event, template) {
         var self = template;
-        MusicManager.addSongs(event.target.files, function() {
+        MusicManager.importSongs(event.target.files, function() {
         }, function(error) {
             UIkit.notify(error.message, 'warning');
         });
