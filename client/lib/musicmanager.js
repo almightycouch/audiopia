@@ -1,4 +1,6 @@
 MusicManager = {
+    peer: null,
+    sharedCollection: null,
     localStorage: null,
     localCollection: null,
 
@@ -14,9 +16,26 @@ MusicManager = {
                 self.localCollection = new Mongo.Collection(null);
             }
         }
+        if(!self.sharedCollection) {
+            self.sharedCollection = Music;
+        }
         if(!self.localCollection) {
             self.localCollection = new Ground.Collection('music', { connection: null });
         }
+
+        Tracker.autorun(function() {
+            var userId = Meteor.userId();
+            if(!userId) {
+                Meteor.loginVisitor();
+            }
+            if(!self.peer) {
+                self.peer = new WebRTC(userId, { key: '62is9f6ozx2mx6r' });
+                self.synchronize(function(error) {
+                    console.warn(error);
+                });
+            }
+        });
+
     },
     addSongs: function(files, successCallback, errorCallback) {
         var self = this;
@@ -73,7 +92,7 @@ MusicManager = {
     pushSong: function(song, successCallback, errorCallback) {
         var self = this;
         if(window.chrome && window.navigator.vendor == 'Google Inc.' && parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) >= 30) {
-            Meteor.call('pushSong', song, function(error, songId) {
+            Meteor.call('addSong', song, function(error, songId) {
                 if(!error) {
                     if(successCallback) {
                         successCallback(_.extend(song, { '_id': songId }));
@@ -81,6 +100,16 @@ MusicManager = {
                 } else if(errorCallback) {
                     errorCallback(error);
                 }
+            });
+        }
+    },
+    requestSong: function(peerId, songId, successCallback, errorCallback, options) {
+        var self = this;
+        var conn = self.peer.request(peerId, songId, successCallback, errorCallback, options);
+        if(!conn) {
+        } else {
+            conn.on('error', function(error) {
+                errorCallback(error);
             });
         }
     },

@@ -73,11 +73,11 @@ Template.AudioPlayer.rendered = function() {
 }
 
 Template.AudioPlayer.helpers({
-    duration: function() {
+    'duration': function() {
         var self = Template.instance();
         return self.duration.get();
     },
-    currentTime: function() {
+    'currentTime': function() {
         var self = Template.instance();
         return self.currentTime.get();
     }

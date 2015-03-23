@@ -1,11 +1,20 @@
 Meteor.startup(function () {
-    MusicCollection.remove({});
-    Meteor.publish('music', function(){
-        return MusicCollection.find();
+    Meteor.publish('music', function() {
+        return Music.find();
     });
+
+    Meteor.publish('stats', function() {
+        return Stats.find();
+    });
+
+    Music.remove({});
     Meteor.users.find({ 'status.online': true }).observe({
         removed: function(user) {
-            MusicCollection.remove({'owner': user._id});
+            Music.remove({ 'owner': user._id });
         }
     });
+
+    Meteor.setInterval(function() {
+        Stats.insert({ 'timestamp': new Date().valueOf(), 'total': Music.find().count() });
+    }, 60 * 60 * 1000);
 });

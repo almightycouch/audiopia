@@ -1,36 +1,34 @@
 Template.Dashboard.rendered = function() {
     var self = this;
-    var data = {
-        labels: ['03/13', '03/14', '03/15', '03/16', '03/17', '03/18', '03/19', '03/20', '03/21', '03/22'],
+    self.chart = new Chart($('#chart').get(0).getContext('2d')).Line({
+        labels: [],
         datasets: [
             {
-                label: 'My First dataset',
                 fillColor: 'rgba(220,220,220,0.2)',
                 strokeColor: 'rgba(220,220,220,1)',
-                pointColor: 'rgba(220,220,220,1)',
-                pointStrokeColor: '#fff',
-                pointHighlightFill: '#fff',
-                pointHighlightStroke: 'rgba(220,220,220,1)',
-                data: [22, 43, 53, 65, 59, 80, 81, 56, 55, 40]
-            },
-            {
-                label: 'My Second dataset',
-                fillColor: 'rgba(151,187,205,0.2)',
-                strokeColor: 'rgba(151,187,205,1)',
-                pointColor: 'rgba(151,187,205,1)',
-                pointStrokeColor: '#fff',
-                pointHighlightFill: '#fff',
-                pointHighlightStroke: 'rgba(151,187,205,1)',
-                data: [34, 27, 28, 28, 48, 40, 19, 86, 27, 90]
             }
         ]
-    };
-    var chart = new Chart($('#myChart').get(0).getContext('2d')).Line(data, {
+    }, {
         responsive: true,
         scaleFontFamily: 'Open Sans',
         scaleFontSize: 10,
         scaleFontColor: '#ccc',
         showTooltips: false,
+        pointDot: false
+    });
+
+    Tracker.autorun(function(event) {
+        var sortOrder = { sort: { timestamp: -1 } }; 
+        var increment = function(stat) {
+            var timestamp = new Date(stat.timestamp);
+            self.chart.addData([stat.total], ('0' + timestamp.getHours()).slice(-2) + ':' + ('0' + timestamp.getMinutes()).slice(-2));
+        }
+        if(!event.firstRun) {
+            self.chart.removeData();
+            increment(Stats.findOne({}, sortOrder));
+        } else {
+            _.each(Stats.find({}, _.extend({ limit: 24 }, sortOrder)).fetch().reverse(), increment);
+        }
     });
 }
 

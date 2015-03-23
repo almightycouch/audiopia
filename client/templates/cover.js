@@ -34,15 +34,15 @@ Template.Cover.created = function() {
 }
 
 Template.Cover.helpers({
-    artist: function() {
+    'artist': function() {
         var self = Template.instance();
         return self.artist.get();
     },
-    album: function() {
+    'album': function() {
         var self = Template.instance();
         return self.album.get();
     },
-    coverUrl: function() {
+    'coverUrl': function() {
         var self = Template.instance();
         return self.coverUrl.get();
     }

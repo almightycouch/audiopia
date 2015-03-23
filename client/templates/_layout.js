@@ -22,7 +22,7 @@ Template._layout.rendered = function() {
 
 Template._layout.helpers({
     'onlineCount': function() {
-        return MusicCollection.find().count();
+        return MusicManager.sharedCollection.find().count();
     },
     'localCount': function() {
         return MusicManager.localCollection.find().count();
