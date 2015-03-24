@@ -14,9 +14,10 @@ MusicManager = {
                     Meteor.loginVisitor();
                 }
                 if(!self.peer) {
-                    self.peer = new WebRTC(userId, { key: '62is9f6ozx2mx6r' });
-                    self.synchronize(function(error) {
-                        console.warn(error);
+                    self.peer = new WebRTC(userId, { key: '62is9f6ozx2mx6r' }, function() {
+                        self.synchronize(function(error) {
+                            console.warn(error);
+                        });
                     });
                 }
             });
@@ -98,7 +99,7 @@ MusicManager = {
     },
     pushSong: function(song, successCallback, errorCallback) {
         var self = this;
-        if(window.chrome && window.navigator.vendor == 'Google Inc.' && parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) >= 30) {
+        if(!self.peer.peer.destroyed) {
             Meteor.call('addSong', song, function(error, songId) {
                 if(!error) {
                     if(successCallback) {

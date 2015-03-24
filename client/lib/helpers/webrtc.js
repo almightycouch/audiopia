@@ -1,7 +1,9 @@
-WebRTC = function(userId, options) {
+WebRTC = function(userId, options, successCallback) {
     var self = this;
     self.peer = new Peer(userId, options);
-    self.peer.on('connection', function(conn) {
+    self.peer.on('open', function(id) {
+        successCallback();
+    }).on('connection', function(conn) {
         var sendError = function(error) {
             setTimeout(function() {
                 conn.send({ error: error });
@@ -89,7 +91,7 @@ WebRTC = function(userId, options) {
                 self.peer.reconnect();
             }, 5000);
         } else if(error.type == 'browser-incompatible') {
-            alert(error.message);
+            // TODO
         } else if(self._errorCallback) {
             self._errorCallback(error);
         } else {
