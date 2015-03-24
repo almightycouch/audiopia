@@ -49,12 +49,23 @@ main {
                 ul.uk-tab {
                     margin-top: 14px;
                     li {
+                        .uk-badge {
+                            margin-top: -2px;
+                                background-image: linear-gradient(#b5c5e5, #abb8d7);
+                        }
                         &.uk-active a {
                             border-color: #ced9e3;
+                            .uk-badge {
+                                background-image: linear-gradient(#ced9e3, #bbc5cf);
+                            }
                         }
-                        &:not(.uk-active) a:hover {
-                            background: transparent;
-                            border-color: transparent;
+                        &:not(.uk-active) a {
+                            color: #758098;
+                            &:hover {
+                                color: #475a81;
+                                background: transparent;
+                                border-color: transparent;
+                            }
                         }
                     }
                 }
@@ -236,7 +247,7 @@ nav[role="menu"] {
             span.uk-badge {
                 min-width: 30px;
                 float: right;
-                margin-top: 5px;
+                margin-top: 9px;
                 padding-bottom: 1px;
                 font-family: @base-code-font-family;
                 font-weight: 400;
