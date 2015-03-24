@@ -103,6 +103,10 @@ Template.Collection.rendered = function() {
 }
 
 Template.Collection.helpers({
+    'local': function() {
+        var self = Template.instance();
+        return this.collection == MusicManager.localCollection;
+    },
     'model': function() {
         var self = Template.instance();
         return this.collection.find(self.searchQuery(), { fields: this.fields, sort: this.sort });
@@ -110,9 +114,11 @@ Template.Collection.helpers({
     'rowAttributes': function() {
         var self = Template.instance();
         var attributes = {};
+        /*
         if(!AudioPlayer.canPlay(this)) {
             _.extend(attributes, { disabled: 'disabled' });
         }
+        */
         if(_.isEqual(self._selected.get(), this)) {
             _.extend(attributes, { selected: 'selected' });
         }
@@ -139,6 +145,12 @@ Template.Collection.helpers({
 });
 
 Template.Collection.events({
+    'click button#download': function(event, template) {
+        var self = template;
+        self.$('td input[type="checkbox"]:checked').each(function() {
+            MusicManager.downloads.push(Blaze.getData(this));
+        });
+    },
     'submit form': function(event, template) {
         return false;
     },

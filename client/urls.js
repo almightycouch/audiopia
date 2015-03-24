@@ -27,7 +27,7 @@ Router.route('/music/', function() {
     var self = this;
     self.render('Collection', {
         data: {
-            fields: { track: true, title: true, album: true, artist: true, duration: true, url: true, mime: true, owner: true },
+            fields: { track: true, title: true, album: true, artist: true, duration: true, url: true, mime: true, extension: true, owner: true },
             sort: { artist: 1, year: -1, album: 1, track: 1 },
             collection: self.params.hash == 'me' ? MusicManager.localCollection : MusicManager.sharedCollection,
         }

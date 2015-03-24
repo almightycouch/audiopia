@@ -9,7 +9,7 @@
                 <div class="uk-button-group">
                 {{#unless currentImport }}
                     <div id="import" class="uk-form-file">
-                        <button class="uk-button"><i class="uk-icon-check"></i>&nbsp;&nbsp;Import</button>
+                        <button class="uk-button"><i class="uk-icon-arrow-up"></i>&nbsp;&nbsp;Import</button>
                         <input type="file" multiple accept="audio/*" webkitdirectory>
                     </div>
                 {{else}}
@@ -25,11 +25,7 @@
                 <canvas id="chart" height="50"></canvas>
             </li>
             <li>
-                <ul>
-                {{#each downloads}}
-                    <li>{{title}}</li>
-                {{/each}}
-                </ul>
+                {{#each downloads}}{{/each}}
             </li>
         </ul>
     </section>

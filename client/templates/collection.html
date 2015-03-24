@@ -1,6 +1,15 @@
 <template name="Collection">
     <section class="collection">
         <aside>
+            <div class="uk-button-group">
+            {{#if local}}
+                <button class="uk-button"></button>
+                <button class="uk-button"></button>
+            {{else}}
+                <button id="download" class="uk-button"><i class="uk-icon-arrow-down"></i>&nbsp;&nbsp;Download</button>
+                <button class="uk-button"></button>
+            {{/if}}
+            </div>
             <form class="fixed uk-form">
                 <div class="uk-form-icon">
                     <i class="uk-icon-search"></i>

@@ -55,9 +55,6 @@ main {
                         }
                         &.uk-active a {
                             border-color: #ced9e3;
-                            .uk-badge {
-                                background-image: linear-gradient(#ced9e3, #bbc5cf);
-                            }
                         }
                         &:not(.uk-active) a {
                             color: #758098;
@@ -77,6 +74,24 @@ main {
             }
         }
         &.collection {
+            aside {
+                .uk-button-group {
+                    position: relative;
+                    padding-left: 20px;
+                    &:before {
+                        position: absolute;
+                        left: -8px;
+                        top: 16px;
+                        display: inline-block;
+                        content: "\f149";
+                        font-family: 'FontAwesome';
+                        font-size: 30px;
+                        color: #bcc6d0;
+                        text-shadow: 0 1px #f7f7f7;
+                        transform: scale(-1, 1);
+                    }
+                }
+            }
             table {
                 position: relative;
                 display: table;
