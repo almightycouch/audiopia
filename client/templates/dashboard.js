@@ -14,14 +14,14 @@ Template.Dashboard.rendered = function() {
     }, {
         responsive: true,
         scaleFontFamily: 'Open Sans',
-        scaleFontSize: 10,
-        scaleFontColor: '#ccc',
+        scaleFontSize: 9,
+        scaleFontColor: '#aaa',
         showTooltips: false,
         pointDot: false
     });
 
     Tracker.autorun(function(event) {
-        var limit = 20;
+        var limit = 30;
         var sortOrder = { sort: { timestamp: -1 } }; 
         var increment = function(stat) {
             if(stat) {
@@ -48,6 +48,9 @@ Template.Dashboard.helpers({
         if(!MusicManager.localCollection.find().count()) {
             return { disabled: 'disabled' };
         }
+    },
+    'downloads': function() {
+        return _.toArray(Session.get('downloads'));
     }
 });
 

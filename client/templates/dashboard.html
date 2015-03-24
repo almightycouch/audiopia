@@ -3,6 +3,7 @@
         <aside>
             <ul class="uk-tab uk-float-left" data-uk-tab="{connect:'.uk-switcher'}">
                 <li class="uk-active"><a href="#">Overview</a></li>
+                <li><a href="#">Downloads <div class="uk-badge">{{downloads.length}}</div></a></li>
             </ul>
             <div class="uk-text-right">
                 <div class="uk-button-group">
@@ -21,8 +22,14 @@
         </aside>
         <ul class="uk-switcher">
             <li class="uk-active">
-                <h2>Activity</h2>
                 <canvas id="chart" height="50"></canvas>
+            </li>
+            <li>
+                <ul>
+                {{#each downloads}}
+                    <li>{{title}}</li>
+                {{/each}}
+                </ul>
             </li>
         </ul>
     </section>

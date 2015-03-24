@@ -33,7 +33,16 @@ MusicManager = {
             init();
         });
         self.downloads = async.queue(function(song, asyncCallback) {
-            self.downloadSong(song, asyncCallback, asyncCallback);
+            Session.set('downloads', _.toArray(Session.get('downloads')).concat([song]));
+            self.downloadSong(song, function(id) {
+                asyncCallback();
+                var downloads = _.toArray(Session.get('downloads'));
+                Session.set('downloads', _.without(downloads, _.findWhere(downloads, { _id: song._id })));
+            }, function(error) {
+                asyncCallback(error);
+                var downloads = _.toArray(Session.get('downloads'));
+                Session.set('downloads', _.without(downloads, _.findWhere(downloads, { _id: song._id })));
+            });
         }, 1);
     },
     importSongs: function(files, successCallback, errorCallback) {
