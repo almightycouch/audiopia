@@ -7,36 +7,34 @@ MusicManager = {
 
     initialize: function() {
         var self = this;
-        var fallback = function(error) {
-            self.clear();
-            self.localStorage = new TemporaryStorage();
-        }
-        try {
-            self.localStorage = new FilesystemStorage(fallback);
-        } catch(error) {
-            try {
-                self.localStorage = new IndexedDBStorage();
-            } catch(error) {
-                fallback(error);
-            }
+        var init = function() {
+            Tracker.autorun(function() {
+                var userId = Meteor.userId();
+                if(!userId) {
+                    Meteor.loginVisitor();
+                }
+                if(!self.peer) {
+                    self.peer = new WebRTC(userId, { key: '62is9f6ozx2mx6r' });
+                    self.synchronize(function(error) {
+                        console.warn(error);
+                    });
+                }
+            });
         }
         self.sharedCollection = Music;
         self.localCollection = new Ground.Collection('music', { connection: null });
-        Tracker.autorun(function() {
-            var userId = Meteor.userId();
-            if(!userId) {
-                Meteor.loginVisitor();
+        self.localStorage = new FilesystemStorage(init, function(error) {
+            try {
+                self.localStorage = new IndexedDBStorage();
+            } catch(error) {
+                self.localStorage = new TemporaryStorage();
+                self.localCollection.remove({});
             }
-            if(!self.peer) {
-                self.peer = new WebRTC(userId, { key: '62is9f6ozx2mx6r' });
-                self.synchronize(function(error) {
-                    console.warn(error);
-                });
-                self.downloads = async.queue(function(song, asyncCallback) {
-                    self.downloadSong(song, asyncCallback, asyncCallback);
-                }, 1);
-            }
+            init();
         });
+        self.downloads = async.queue(function(song, asyncCallback) {
+            self.downloadSong(song, asyncCallback, asyncCallback);
+        }, 1);
     },
     importSongs: function(files, successCallback, errorCallback) {
         var self = this;

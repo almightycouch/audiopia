@@ -1,14 +1,17 @@
-FilesystemStorage = function(errorCallback) {
+FilesystemStorage = function(successCallback, errorCallback) {
     var self = this;
     if(!window.webkitRequestFileSystem) {
-        throw new Error('Your browser does not support the Filesystem API.');
+        setTimeout(function() {
+            errorCallback(new Error('Your browser does not support the Filesystem API.'));
+        }, 100);
+    } else {
+        navigator.webkitPersistentStorage.requestQuota(2*1024*1024*1024 /* 2GB */, function(grantedBytes) {
+            window.webkitRequestFileSystem(window.PERSISTENT, grantedBytes, function(filesystem) {
+                self.root = filesystem.root;
+                successCallback();
+            }, errorCallback);
+        });
     }
-
-    navigator.webkitPersistentStorage.requestQuota(2*1024*1024*1024 /* 2GB */, function(grantedBytes) {
-        window.webkitRequestFileSystem(window.PERSISTENT, grantedBytes, function(filesystem) {
-            self.root = filesystem.root;
-        }, errorCallback);
-    });
 }
 
 FilesystemStorage.prototype.readFile = function(filePath, successCallback, errorCallback) {
