@@ -8,6 +8,7 @@ MusicManager = {
     initialize: function() {
         var self = this;
         var init = function() {
+            Meteor.subscribe('music');
             Tracker.autorun(function() {
                 var userId = Meteor.userId();
                 if(!userId) {

@@ -1,12 +1,5 @@
 Router.configure({
-    layoutTemplate: '_layout',
-    subscriptions: function() {
-        this.subscribe('music').wait();
-    },
-    onBeforeAction: function() {
-        Session.set('search', null);
-        this.next();
-    }
+    layoutTemplate: '_layout'
 });
 
 Router.route('/', function() {
@@ -32,4 +25,10 @@ Router.route('/music/', function() {
             collection: self.params.hash == 'me' ? MusicManager.localCollection : MusicManager.sharedCollection,
         }
     });
-}, { name: 'music', });
+}, {
+    name: 'music',
+    onBeforeAction: function() {
+        Session.set('search', null);
+        this.next();
+    }
+});
