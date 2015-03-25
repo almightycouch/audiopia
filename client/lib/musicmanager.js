@@ -35,17 +35,28 @@ MusicManager = {
             init();
         });
         self.downloads = async.queue(function(song, asyncCallback) {
-            Session.set('downloads', _.toArray(Session.get('downloads')).concat([song]));
             self.downloadSong(song, function(id) {
                 asyncCallback();
-                var downloads = _.toArray(Session.get('downloads'));
-                Session.set('downloads', _.without(downloads, _.findWhere(downloads, { _id: song._id })));
-            }, function(error) {
-                asyncCallback(error);
-                var downloads = _.toArray(Session.get('downloads'));
-                Session.set('downloads', _.without(downloads, _.findWhere(downloads, { _id: song._id })));
-            });
+            }, asyncCallback);
         }, 1);
+        _.extend(self.downloads, {
+            _add: self.downloads.push,
+            push: function(song, successCallback, errorCallback) {
+                Session.set('downloads', _.toArray(Session.get('downloads')).concat([song]));
+                this._add(song, function(error) {
+                    var downloads = _.toArray(Session.get('downloads'));
+                    Session.set('downloads', _.without(downloads, _.findWhere(downloads, { _id: song._id })));
+                    if(!error) {
+                        if(successCallback) {
+                            successCallback();
+                        }
+                    } else if(errorCallback) {
+                        errorCallback(error);
+                    }
+
+                });
+            }
+        });
     },
     importSongs: function(files, successCallback, errorCallback) {
         var self = this;
