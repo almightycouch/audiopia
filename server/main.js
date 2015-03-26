@@ -10,7 +10,7 @@ Meteor.startup(function () {
     Music.remove({});
     Meteor.users.find({ 'status.online': true }).observe({
         removed: function(user) {
-            Music.remove({ 'owner': user._id });
+            Meteor.call('clear', user._id);
         }
     });
 

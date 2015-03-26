@@ -36,6 +36,7 @@ MusicManager = {
         });
         self.downloads = async.queue(function(song, asyncCallback) {
             self.downloadSong(song, function(id) {
+                self.pushSong(_.extend({ _id: id }, song));
                 asyncCallback();
             }, asyncCallback);
         }, 1);
@@ -79,7 +80,7 @@ MusicManager = {
                         'extension': path.substr(path.lastIndexOf('.') + 1)
                     };
                     self.saveSong(song, file, function(id) {
-                        self.pushSong(_.extend(song, { _id: id }));
+                        self.pushSong(_.extend({ _id: id }, song));
                         asyncCallback();
                     }, function(error) {
                         if(error.name != 'InvalidModificationError') {
@@ -146,13 +147,13 @@ MusicManager = {
     },
     downloadSong: function(song, successCallback, errorCallback) {
         var self = this;
-        self.requestSong(song.owner, song._id, function(url) {
+        self.requestSong(song.owners[0], song._id, function(url) {
             var request = new XMLHttpRequest();
             request.open('GET', url, true); 
             request.responseType = 'blob';
             request.onerror = errorCallback;
             request.onload = function(event) {
-                self.saveSong(_.omit(song, 'owner'), new Blob([this.response], { type: song.mime }), successCallback, errorCallback);
+                self.saveSong(_.omit(song, 'owners'), new Blob([this.response], { type: song.mime }), successCallback, errorCallback);
             }
             request.send();
         }, errorCallback, { action: 'download' });

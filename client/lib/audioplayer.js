@@ -25,12 +25,12 @@ AudioPlayer = {
                 errorCallback(error);
             }
         };
-        if(song.owner == Meteor.userId()) {
+        if(_.contains(song.owners, Meteor.userId())) {
             self.loadFromUrl(MusicManager.localCollection.findOne({ _id: song._id }).url, successCallback2, errorCallback2);
         } else if(song.url) {
             self.loadFromUrl(song.url, successCallback2, errorCallback2);
         } else {
-            MusicManager.requestSong(song.owner, song._id, function(url) {
+            MusicManager.requestSong(song.owners[0], song._id, function(url) {
                 self.loadFromUrl(url, successCallback2, errorCallback2);
             }, errorCallback2, options);
         }
