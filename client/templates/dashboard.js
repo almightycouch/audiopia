@@ -13,6 +13,7 @@ Template.Dashboard.rendered = function() {
         ]
     }, {
         responsive: true,
+        animationSteps: 30,
         scaleFontFamily: 'Open Sans',
         scaleFontSize: 9,
         scaleFontColor: '#aaa',
