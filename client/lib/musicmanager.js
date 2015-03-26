@@ -112,7 +112,7 @@ MusicManager = {
     pushSong: function(song, successCallback, errorCallback) {
         var self = this;
         if(!self.peer.peer.destroyed) {
-            Meteor.call('addSong', song, function(error, songId) {
+            Meteor.call('pushSong', song, function(error, songId) {
                 if(!error) {
                     if(successCallback) {
                         successCallback(_.extend(song, { '_id': songId }));
