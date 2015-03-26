@@ -148,7 +148,10 @@ Template.Collection.events({
     'click button#download': function(event, template) {
         var self = template;
         self.$('td input[type="checkbox"]:checked').each(function() {
-            MusicManager.downloads.push(Blaze.getData(this));
+            var song = Blaze.getData(this);
+            if(!MusicManager.localCollection.findOne({ _id: song._id })) {
+                MusicManager.downloads.push(song);
+            }
         });
     },
     'submit form': function(event, template) {

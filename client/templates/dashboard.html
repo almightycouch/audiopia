@@ -25,7 +25,21 @@
                 <canvas id="chart" height="50"></canvas>
             </li>
             <li>
-                {{#each downloads}}{{/each}}
+                {{#if downloads}}
+                <table class="uk-table">
+                    <tbody>
+                        {{#each downloads}}
+                        <tr>
+                            <td>{{title}}</td>
+                            <td>{{artist}}</td>
+                            <td class="uk-hidden-small">{{album}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+                {{else}}
+                No running download tasks
+                {{/if}}
             </li>
         </ul>
     </section>

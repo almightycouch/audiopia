@@ -12,13 +12,13 @@ Template.Dashboard.rendered = function() {
             }
         ]
     }, {
+        animation: false,
         responsive: true,
-        animationSteps: 30,
+        pointDot: false,
+        showTooltips: false,
         scaleFontFamily: 'Open Sans',
         scaleFontSize: 9,
-        scaleFontColor: '#aaa',
-        showTooltips: false,
-        pointDot: false
+        scaleFontColor: '#aaa'
     });
 
     self.autorun(function(event) {
