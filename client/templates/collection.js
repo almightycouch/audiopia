@@ -167,15 +167,17 @@ Template.Collection.events({
         self.$('td input[type="checkbox"]').each(function() {
             self.$(this).prop('checked', checked);
         });
+        self.$('aside .uk-button-group button').prop('disabled', !checked);
     },
     'change table tbody tr td input[type="checkbox"]': function(event, template) {
         var self = template;
-        var allChecked = true;
+        var checked = false;
         self.$('td input[type="checkbox"]').each(function() {
-            allChecked = self.$(this).prop('checked');
-            return allChecked;
+            checked = self.$(this).prop('checked');
+            return checked;
         });
-        self.$('th input[type="checkbox"]').prop('checked', allChecked);
+        self.$('th input[type="checkbox"]').prop('checked', checked);
+        self.$('aside .uk-button-group button').prop('disabled', !self.$('td input[type="checkbox"]:checked').length);
     },
     'click table tbody tr': function(event, template) {
         var self = template;
