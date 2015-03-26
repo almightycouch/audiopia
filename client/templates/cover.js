@@ -3,7 +3,7 @@ Template.Cover.created = function() {
     self.artist = new ReactiveVar();
     self.album = new ReactiveVar();
     self.coverUrl = new ReactiveVar();
-    Tracker.autorun(function() {
+    self.autorun(function() {
         var song = Session.get('currentSong');
         if(!song) {
             self.coverUrl.set('/static/img/cover.png');

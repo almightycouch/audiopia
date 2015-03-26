@@ -20,7 +20,7 @@ Template.Dashboard.rendered = function() {
         pointDot: false
     });
 
-    Tracker.autorun(function(event) {
+    self.autorun(function(event) {
         var limit = 30;
         var sortOrder = { sort: { timestamp: -1 } }; 
         var increment = function(stat) {
