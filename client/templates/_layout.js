@@ -26,5 +26,8 @@ Template._layout.helpers({
     },
     'localCount': function() {
         return MusicManager.localCollection.find().count();
+    },
+    'idle': function() {
+        return !Session.get('currentImport') && !Session.get('downloads');
     }
 });

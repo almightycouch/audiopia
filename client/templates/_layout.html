@@ -21,7 +21,7 @@
     </main>
     <nav role="menu">
         <ul class="uk-nav uk-nav-parent-icon" data-uk-nav="{multiple:true}" role="navigation">
-            <li class="{{activeRoute 'dashboard'}}"><a href="{{pathFor 'dashboard'}}"><i class="uk-icon-dashboard"></i> Dashboard</a></li>
+            <li class="{{activeRoute 'dashboard'}}"><a href="{{pathFor 'dashboard'}}"><i class="uk-icon-dashboard"></i> Dashboard{{#unless idle}}<span class="processing"><i class="uk-icon-circle-o-notch uk-icon-spin"></i></span>{{/unless}}</a></li>
             <li class="uk-active uk-parent">
                 <a href="#"><i class="uk-icon-music"></i> Music</a>
                 <ul class="uk-nav-sub">

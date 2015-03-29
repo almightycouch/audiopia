@@ -40,6 +40,9 @@ MusicManager = {
                 asyncCallback();
             }, asyncCallback);
         }, 1);
+        self.downloads.drain = function() {
+            Session.set('downloads');
+        }
         _.extend(self.downloads, {
             _add: self.downloads.push,
             push: function(song, successCallback, errorCallback) {
