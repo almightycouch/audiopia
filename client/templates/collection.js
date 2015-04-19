@@ -151,6 +151,14 @@ Template.Collection.events({
             var song = Blaze.getData(this);
             if(!MusicManager.localCollection.findOne({ _id: song._id })) {
                 MusicManager.downloads.push(song);
+            } else {
+                var event = document.createEvent('MouseEvents');
+                event.initEvent('click', true, true);
+                var link = document.createElement('a');
+                link.href = song.url;
+                link.download = '{track} {title}.{extension}'.format(song);
+                link.setAttribute('target','_blank');
+                link.dispatchEvent(event);
             }
         });
     },
