@@ -1,6 +1,9 @@
 Audiopia
 ========
 
+![Cover image](http://fs5.directupload.net/images/170405/x2xjlzs5.jpg)
+
+
 [Audiopia][] is a peer-to-peer music streaming platform built with modern Web Standards technologies (such as [WebSockets][] and [WebRTC][]) and APIs ([MediaSource API][], [Web Audio API][]).
 
 No online storage
