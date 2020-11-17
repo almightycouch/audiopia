@@ -1,6 +1,10 @@
 Audiopia
 ========
 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/almightycouch/audiopia/master/LICENSE)
+[![Github Issues](https://img.shields.io/github/issues/almightycouch/audiopia.svg)](http://github.com/almightycouch/audiopia/issues)
+
+
 ![Cover image](http://i.imgur.com/QQMyZy5.jpg)
 
 
